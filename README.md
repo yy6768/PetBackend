@@ -1,13 +1,10 @@
-# PetWeb
+# PetBackend
 
-2023-2024 ECNU SoftWare Development frontend project
+2023-2024 ECNU SoftWare Development backend project
 
 ### 上手指南
 
 ###### 开发前的配置要求
-
-1. 安装Vue/React
-1. 输入npx 命令启动
 
 ###### **安装步骤**
 
@@ -48,5 +45,3 @@ git clone https://github.com/shaojintian/Best_README_template.git
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-### 
