@@ -10,13 +10,34 @@
 
 请按照以下步骤提交PR：
 
-1. Fork仓库。
-2. 创建您自己的分支 (`git checkout `)。
-3. 提交您的更改 (`git commit -m 'Add some fooBar'`)。
-4. 推送到分支 (`git push origin `)。
-5. 创建新的拉取请求。
+1. Fork仓库创建新的分支
+
+   ```
+   git remote add origin git@github.com:yy6768/PetBackend.git # 或者你的分支
+   git fetch origin 
+   git checkout -b <你的分支名>
+   git merge origin/master
+   ```
+
+2. 提交您的更改 之前检查是否更新 
+
+   ```
+   git pull origin master
+   ```
+
+3. 提交新的更新
+
+   ```
+   `git commit -m '<>'
+   ```
+
+4. 推送到分支 (`git push origin:<你的远程分支> `)。
+
+5. 创建新的拉取请求Pr。
 
 在您提交拉取请求之前，请确保您已经测试了代码，并且构建是通过的。
+
+
 
 ## 编码协议
 
