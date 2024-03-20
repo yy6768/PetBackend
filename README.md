@@ -10,14 +10,36 @@
 
 ```
 # clone
-git clone https://github.com/shaojintian/Best_README_template.git
+git clone https://github.com/yy6768/PetBackend
 
 ```
 
-### 文件目录说明
+### 文件夹说明
+
+详情请阅读Architecture.md
+
+```
+PetBackend
+│
+├── web 
+│
+├── video (视频流传输)
+│
+├── chat (聊天)
+│
+├── 3d(3d模型微服务)
+│
+└── pom.xml -- 父POM文件，管理项目依赖和模块
 
 ```
 
+```
+backend
+├─config（配置类）
+├─controller （外观接口）
+├─pojo （数据库表对象）
+└─service （service接口）
+  ├─impl  （service实现）
 ```
 
 
@@ -30,9 +52,13 @@ git clone https://github.com/shaojintian/Best_README_template.git
 
 
 
-### 使用到的框架
+### 使用到的框架/依赖
 
-- Vue/React
+- Spring  Cloud 微服务
+- Spring Web
+- Spring security + Jwt token实现
+- Mybatis Plus
+- Mysql 8.0
 
 ### 如何贡献
 
