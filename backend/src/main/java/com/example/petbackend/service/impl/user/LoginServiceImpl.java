@@ -2,7 +2,7 @@ package com.example.petbackend.service.impl.user;
 
 import com.example.petbackend.pojo.User;
 import com.example.petbackend.service.impl.utils.UserDetailsImpl;
-import com.example.petbackend.service.user.LoginService;
+import com.example.petbackend.service.user.account.LoginService;
 import com.example.petbackend.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
