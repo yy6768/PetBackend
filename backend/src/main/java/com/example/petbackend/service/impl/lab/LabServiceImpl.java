@@ -11,9 +11,6 @@ import java.util.Map;
 @Service
 public class LabServiceImpl implements LabService {
 
-    @Autowired
-    private LabService labService;
-
     @Override
     public Map<String, String> addLab(String lab_name, Double lab_cost) {
         Map<String,String> map=new HashMap<>();
