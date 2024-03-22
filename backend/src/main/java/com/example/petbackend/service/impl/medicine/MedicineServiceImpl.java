@@ -35,7 +35,12 @@ public class MedicineServiceImpl implements MedicineService {
             medicineMapper.updateById(medicine);
         }
         Map<String,String> medicineMap=new HashMap<>();
-        medicineMap.put("error_message", "success");
+        if(medicineMapper.updateById(medicine) < 1){
+            medicineMap.put("error_message", "failure");
+        }
+        else{
+            medicineMap.put("error_message", "success");
+        }
         return medicineMap;
     };
 
@@ -44,7 +49,12 @@ public class MedicineServiceImpl implements MedicineService {
     public Map<String, String> deleteMedicine(Integer medicine_id){
         medicineMapper.deleteById(medicine_id);
         Map<String,String> medicineMap=new HashMap<>();
-        medicineMap.put("error_message", "success");
+        if(medicineMapper.deleteById(medicine_id) < 1){
+            medicineMap.put("error_message", "failure");
+        }
+        else{
+            medicineMap.put("error_message", "success");
+        }
         return medicineMap;
     };
 }
