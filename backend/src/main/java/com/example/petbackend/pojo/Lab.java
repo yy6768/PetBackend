@@ -12,7 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Lab {
     @TableId(type = IdType.AUTO)
-    private Integer lab_id;
-    private String lab_name;
-    private Double lab_cost;
+    private Integer labId;
+    private String labName;
+    private Double labCost;
+
+    public Lab(String lab_name, Double lab_cost){
+        this.labName=lab_name;
+        this.labCost=lab_cost;
+    }
 }
