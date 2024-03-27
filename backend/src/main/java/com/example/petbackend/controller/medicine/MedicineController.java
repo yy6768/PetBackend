@@ -1,10 +1,9 @@
 package com.example.petbackend.controller.medicine;
 
 import com.example.petbackend.service.medicine.MedicineService;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -18,7 +17,7 @@ public class MedicineController {
      * 添加一个药品
      * @param map
      */
-    @PostMapping("/medications/add/")
+    @PostMapping("/medications/add")
     public Map<String, String> addMedicine(@RequestParam Map<String, String> map){
         String medicine_name = map.get("medicine_name");
         Double medicine_cost= Double.valueOf(map.get("medicine_cost"));
@@ -29,7 +28,7 @@ public class MedicineController {
      * 修改一个药品费用
      * @param map
      */
-    @PostMapping("/medications/update/")
+    @PostMapping("/medications/update")
     public Map<String, String> updateMedicine(@RequestParam Map<String, String> map){
         Integer medicine_id = Integer.valueOf(map.get("medicine_id"));
         Double medicine_cost = Double.valueOf(map.get("medicine_cost"));
@@ -40,7 +39,7 @@ public class MedicineController {
      * 删除一个药品
      * @param map
      */
-    @PostMapping("/medications/delete/")
+    @DeleteMapping("/medications/delete")
     public Map<String, String> deleteMedicine(@RequestParam Map<String, String> map){
         Integer medicine_id = Integer.valueOf(map.get("medicine_id"));
         return medicineService.deleteMedicine(medicine_id);
