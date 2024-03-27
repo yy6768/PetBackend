@@ -22,35 +22,37 @@ public class MedicineServiceImpl implements MedicineService {
         medicineMapper.insert(medicine);
         Map<String,String> medicineMap=new HashMap<>();
         medicineMap.put("error_message", "success");
-        medicineMap.put("medicine_id", String.valueOf(medicineMapper.insert(medicine)));
+        medicineMap.put("medicine_id", String.valueOf(medicine.getMedicineId()));
         return medicineMap;
     };
 
     //修改药品费用
     @Override
-    public Map<String, String> updateMedicine(Integer medicine_id, Double medicine_cost){
+    public Map<String, String> updateMedicine(Integer medicine_id, Double medicine_cost) {
         Medicine medicine = medicineMapper.selectById(medicine_id);
-        if(medicine!=null){
-            medicine.setMedicine_cost(medicine_cost);
-            medicineMapper.updateById(medicine);
+        int res = 0;
+        if (medicine != null) {
+            medicine.setMedicineCost(medicine_cost);
+            res = medicineMapper.updateById(medicine);
         }
-        Map<String,String> medicineMap=new HashMap<>();
-        if(medicineMapper.updateById(medicine) < 1){
-            medicineMap.put("error_message", "failure");
+        Map<String, String> medicineMap = new HashMap<>();
+        String msg;
+        if (res < 1) {
+            msg = "updatefail";
+        } else {
+            msg = "success";
         }
-        else{
-            medicineMap.put("error_message", "success");
-        }
+        medicineMap.put("error_msg", msg);
         return medicineMap;
     };
 
     //删除药品
     @Override
     public Map<String, String> deleteMedicine(Integer medicine_id){
-        medicineMapper.deleteById(medicine_id);
+        int result = medicineMapper.deleteById(medicine_id);
         Map<String,String> medicineMap=new HashMap<>();
-        if(medicineMapper.deleteById(medicine_id) < 1){
-            medicineMap.put("error_message", "failure");
+        if(result < 1){
+            medicineMap.put("error_message", "deletefail");
         }
         else{
             medicineMap.put("error_message", "success");

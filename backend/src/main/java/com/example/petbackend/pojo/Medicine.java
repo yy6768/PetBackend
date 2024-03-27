@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Medicine {
     @TableId(type = IdType.AUTO)
-    private Integer medicine_id;
-    private String medicine_name;
-    private Double medicine_cost;
+    private Integer medicineId;
+    private String medicineName;
+    private Double medicineCost;
     public Medicine(String medicine_name, Double medicine_cost){
-        this.medicine_name=medicine_name;
-        this.medicine_cost=medicine_cost;
+        this.medicineName=medicine_name;
+        this.medicineCost=medicine_cost;
     }
 }
