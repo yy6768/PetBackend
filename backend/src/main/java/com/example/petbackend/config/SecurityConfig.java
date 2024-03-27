@@ -43,7 +43,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/user/account/token/","/lab/update", "/user/account/register/").permitAll()
+                        .requestMatchers("/user/account/token/","/lab/getall", "/user/account/register/").permitAll()
                          // 微服务配置
                         // .requestMatchers("/pk/start/game/").hasIpAddress("127.0.0.1")
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
