@@ -17,10 +17,11 @@ public class LabServiceImpl implements LabService {
     @Autowired
     private LabMapper labMapper;
 
+
+
     @Override
     public Map<String, String> addLab(String lab_name, Double lab_cost) {
         Lab lab = new Lab(lab_name, lab_cost);
-        labMapper.insert(lab);
         Map<String,String> labMap=new HashMap<>();
         labMap.put("error_message", "success");
         labMap.put("lab_id", String.valueOf(labMapper.insert(lab)));
@@ -30,13 +31,14 @@ public class LabServiceImpl implements LabService {
     @Override
     public Map<String, String> updateLab(Integer lab_id, Double lab_cost) {
         Lab lab = labMapper.selectById(lab_id);
+        int i=0;
         if(lab!=null){
             lab.setLabCost(lab_cost);
-            labMapper.updateById(lab);
+            i=labMapper.updateById(lab);
         }
         Map<String,String> labMap=new HashMap<>();
-        if(labMapper.updateById(lab) < 1){
-            labMap.put("error_message", "failure");
+        if(i < 1){
+            labMap.put("error_message", "updatefail");
         }
         else{
             labMap.put("error_message", "success");
@@ -46,10 +48,9 @@ public class LabServiceImpl implements LabService {
 
     @Override
     public Map<String, String> deleteLab(Integer lab_id) {
-        labMapper.deleteById(lab_id);
         Map<String,String> labMap=new HashMap<>();
         if(labMapper.deleteById(lab_id) < 1){
-            labMap.put("error_message", "failure");
+            labMap.put("error_message", "deletefail");
         }
         else{
             labMap.put("error_message", "success");
