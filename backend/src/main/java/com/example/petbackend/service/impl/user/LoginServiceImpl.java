@@ -1,5 +1,7 @@
 package com.example.petbackend.service.impl.user;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.petbackend.mapper.UserMapper;
 import com.example.petbackend.pojo.User;
 import com.example.petbackend.service.impl.utils.UserDetailsImpl;
 import com.example.petbackend.service.user.account.LoginService;
@@ -8,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -17,12 +22,17 @@ import java.util.Map;
 public class LoginServiceImpl implements LoginService {
 
     @Autowired
+    private UserMapper userMapper;
+    @Autowired
     private AuthenticationManager authenticationManager;
+
+
 
     @Override
     public Map<String, String> getToken(String username, String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(username,password);
+
 
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);//登录失败自动处理
 
