@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 public class LabController {
@@ -19,7 +20,7 @@ public class LabController {
         return labService.addLab(lab_name,lab_cost);
     }
 
-    @PutMapping("/lab/update")
+    @PostMapping("/lab/update")
     public Map<String,String> updateLab(@RequestParam Map<String,String> map){
         Integer lab_id= Integer.valueOf(map.get("lab_id"));
         Double lab_cost= Double.valueOf(map.get("lab_cost"));
@@ -32,5 +33,11 @@ public class LabController {
         Integer lab_id=Integer.valueOf(map.get("lab_id"));
 
         return labService.deleteLab(lab_id);
+    }
+
+    @GetMapping("/lab/getall")
+    public Map<String, Object> getAllLab(){
+
+        return labService.getAllLab();
     }
 }
