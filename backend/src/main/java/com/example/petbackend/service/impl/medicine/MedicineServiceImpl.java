@@ -1,5 +1,8 @@
 package com.example.petbackend.service.impl.medicine;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.petbackend.mapper.MedicineMapper;
 import com.example.petbackend.pojo.Medicine;
 import com.example.petbackend.service.medicine.MedicineService;
@@ -7,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -42,7 +46,7 @@ public class MedicineServiceImpl implements MedicineService {
         } else {
             msg = "success";
         }
-        medicineMap.put("error_msg", msg);
+        medicineMap.put("error_message", msg);
         return medicineMap;
     };
 
@@ -59,4 +63,25 @@ public class MedicineServiceImpl implements MedicineService {
         }
         return medicineMap;
     };
+
+
+    //带搜索值分页获取药品列表
+    @Override
+    public  Map<String, Object> getAllMedicine(Integer page, Integer pageSize, String key){
+        IPage<Medicine> medicinePage = new Page<>(page, pageSize);
+        QueryWrapper<Medicine> medicineQueryWrapper = new QueryWrapper<>();
+        medicineQueryWrapper.like("medicine_name", key);
+        medicinePage = medicineMapper.selectPage(medicinePage, medicineQueryWrapper);
+        List<Medicine> medicineList = medicinePage.getRecords();
+        Map<String, Object> medicineMap = new HashMap<>();
+        if(medicineList !=null && !medicineList.isEmpty()) { //搜到的药品列表不为空
+            medicineMap.put("error_message", "success");
+            medicineMap.put("medicine_list", medicineList);
+        } else{
+            medicineMap.put("error_message", "获取失败");
+        }
+        return medicineMap;
+    }
+
+
 }
