@@ -14,4 +14,9 @@ public class MybatisConfig {
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         return interceptor;
     }
+
+    @Bean
+    public PaginationInnerInterceptor paginationInnerInterceptor(){
+        return new PaginationInnerInterceptor();
+    }
 }
