@@ -16,8 +16,8 @@ public class GetCaseServiceImpl implements GetCaseService {
     @Autowired
     private CaseMapper caseMapper;
     @Override
-    public Map<String, Object> getByCateCase(Integer cateId) {
-        List<Illcase> illcaseList =caseMapper.selectByCate(cateId);
+    public Map<String, Object> getByCateCase(Integer cate_id) {
+        List<Illcase> illcaseList =caseMapper.selectByCate(cate_id);
         Map<String, Object> caseMap = new HashMap<>();
         if(illcaseList ==null){
             caseMap.put("error_message", "get list fail");

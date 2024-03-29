@@ -15,6 +15,7 @@ import java.util.Map;
 public class IllCaseController {
     @Autowired
     private CaseService caseService;
+    @Autowired
     private GetCaseService getCaseService;
 
     @PostMapping("/case/add")
