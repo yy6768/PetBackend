@@ -10,4 +10,5 @@ public interface UserManageService {
     Map<String, String> editUser(int uid, String username, String password, int authority);
 
 
+//    Map<String, String> getAllUser(int )
 }
