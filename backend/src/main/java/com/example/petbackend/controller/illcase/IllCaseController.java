@@ -2,6 +2,7 @@ package com.example.petbackend.controller.illcase;
 
 import com.example.petbackend.service.illcase.CaseService;
 import com.example.petbackend.service.illcase.GetCaseService;
+import com.example.petbackend.service.illcase.SortCaseService;
 import com.example.petbackend.service.illcase.UpdateCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,8 @@ public class IllCaseController {
     private GetCaseService getCaseService;
     @Autowired
     private UpdateCaseService updateCaseService;
+    @Autowired
+    private SortCaseService sortCaseService;
 
     @PostMapping("/case/add")
     public Map<String,String> addCase(@RequestParam Map<String,String> map) throws ParseException {
@@ -122,5 +125,22 @@ public class IllCaseController {
         Integer medicine_id= Integer.valueOf(map.get("medicine_id"));
 
         return updateCaseService.deleteMedicineCase(cid,medicine_id);
+    }
+
+    @GetMapping("/case/sort_by_id")
+    public Map<String, Object> sortByIdCase(){
+
+        return sortCaseService.sortByIdCase();
+    }
+    @GetMapping("/case/sort_by_doctor")
+    public Map<String, Object> sortByDoctorCase(){
+
+        return sortCaseService.sortByDoctorCase();
+    }
+
+    @GetMapping("/case/sort_by_date")
+    public Map<String, Object> sortByDateCase(){
+
+        return sortCaseService.sortByDateCase();
     }
 }

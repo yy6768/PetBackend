@@ -21,4 +21,13 @@ public interface CaseMapper extends BaseMapper<Illcase> {
 
     @Select("select * from illcase where date=#{date}")
     List<Illcase> selectByDate(Date date);
+
+    @Select("select * from illcase order by cid")
+    List<Illcase> sortById();
+
+    @Select("select * from illcase join user u on illcase.uid = u.uid order by username")
+    List<Illcase> sortByDoctor();
+
+    @Select("select * from illcase order by date")
+    List<Illcase> sortByDate();
 }
