@@ -34,8 +34,6 @@ public class IllCaseController {
 
     @PostMapping("/case/update")
     public Map<String,String> updateCase(@RequestParam Map<String,String> map){
-        Integer lab_id= Integer.valueOf(map.get("lab_id"));
-        Double lab_cost= Double.valueOf(map.get("lab_cost"));
         Integer cid= Integer.valueOf(map.get("cid"));
         Integer ill_id= Integer.valueOf(map.get("ill_id"));
         String basic_situation=map.get("basic_situation");
