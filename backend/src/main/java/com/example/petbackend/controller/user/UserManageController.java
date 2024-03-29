@@ -3,12 +3,14 @@ package com.example.petbackend.controller.user;
 import com.example.petbackend.service.user.account.UserManageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
 @RestController
+@RequestMapping("/api")
 public class UserManageController {
     @Autowired
     private UserManageService userManageService;

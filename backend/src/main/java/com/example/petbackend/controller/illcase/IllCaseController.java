@@ -10,7 +10,8 @@ import java.util.Date;
 import java.util.Map;
 
 @RestController
-public class IllcaseController {
+@RequestMapping("/api")
+public class IllCaseController {
     @Autowired
     private CaseService caseService;
 
