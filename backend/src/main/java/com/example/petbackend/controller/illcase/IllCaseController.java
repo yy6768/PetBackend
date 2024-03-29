@@ -68,8 +68,22 @@ public class IllCaseController {
 
     @GetMapping("/case/get_by_cate")
     public Map<String,Object> getByCateCase(@RequestParam Map<String,String> map){
-        Integer cate_id=Integer.valueOf(map.get("cate_id"));
+        String cate_name=map.get("cate_name");
 
-        return getCaseService.getByCateCase(cate_id);
+        return getCaseService.getByCateCase(cate_name);
+    }
+
+    @GetMapping("/case/get_by_ill")
+    public Map<String,Object> getByIllCase(@RequestParam Map<String,String> map){
+        String ill_name=map.get("ill_name");
+
+        return getCaseService.getByIllCase(ill_name);
+    }
+
+    @GetMapping("/case/get_by_date")
+    public Map<String,Object> getByDateCase(@RequestParam Map<String,String> map) throws ParseException {
+        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(map.get("date"));
+
+        return getCaseService.getByDateCase(date);
     }
 }
