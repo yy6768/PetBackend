@@ -55,7 +55,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/user/login",  "/api/user/register").permitAll()
+                        .requestMatchers("/api/user/login","/api/case/get_by_cate" , "/api/user/register").permitAll()
                          // 微服务配置
                         // .requestMatchers("").hasIpAddress("127.0.0.1")
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()

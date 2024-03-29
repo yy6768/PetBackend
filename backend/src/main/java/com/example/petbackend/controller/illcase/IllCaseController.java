@@ -1,6 +1,7 @@
 package com.example.petbackend.controller.illcase;
 
 import com.example.petbackend.service.illcase.CaseService;
+import com.example.petbackend.service.illcase.GetCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import java.util.Map;
 public class IllCaseController {
     @Autowired
     private CaseService caseService;
+    private GetCaseService getCaseService;
 
     @PostMapping("/case/add")
     public Map<String,String> addCase(@RequestParam Map<String,String> map) throws ParseException {
@@ -54,5 +56,19 @@ public class IllCaseController {
     public Map<String, Object> getAllCase(){
 
         return caseService.getAllCase();
+    }
+
+    @GetMapping("/case/get_by_id")
+    public Map<String,String> getByIdCase(@RequestParam Map<String,String> map){
+        Integer cid=Integer.valueOf(map.get("cid"));
+
+        return caseService.getByIdCase(cid);
+    }
+
+    @GetMapping("/case/get_by_cate")
+    public Map<String,Object> getByCateCase(@RequestParam Map<String,String> map){
+        Integer cate_id=Integer.valueOf(map.get("cate_id"));
+
+        return getCaseService.getByCateCase(cate_id);
     }
 }

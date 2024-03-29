@@ -11,4 +11,7 @@ import java.util.List;
 public interface CaseMapper extends BaseMapper<Illcase> {
     @Select("select * from illcase")
     List<Illcase> getAll();
+
+    @Select("select * from illcase where ill_id in (select ill_id from ill where cate_id=#{cateId})")
+    List<Illcase> selectByCate(Integer cateId);
 }
