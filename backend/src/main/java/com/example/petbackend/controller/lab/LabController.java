@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
+@RequestMapping("/api")
 public class LabController {
     @Autowired
     private LabService labService;
