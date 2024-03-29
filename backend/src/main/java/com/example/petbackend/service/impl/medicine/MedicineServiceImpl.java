@@ -1,5 +1,6 @@
 package com.example.petbackend.service.impl.medicine;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -80,7 +81,8 @@ public class MedicineServiceImpl implements MedicineService {
         } else{
             medicineMap.put("error_message", "获取失败");
         }
-        return medicineMap;
+        JSONObject obj = new JSONObject(medicineMap);
+        return obj;
     }
 
 
