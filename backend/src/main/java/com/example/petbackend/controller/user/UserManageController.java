@@ -1,11 +1,9 @@
 package com.example.petbackend.controller.user;
 
-import com.example.petbackend.service.user.account.UserManageService;
+import com.alibaba.fastjson.JSONObject;
+import com.example.petbackend.service.user.manage.UserManageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -35,5 +33,15 @@ public class UserManageController {
         int authority = Integer.parseInt(map.get("authority"));
         return userManageService.editUser(uid, username, password, authority);
     }
+
+    @GetMapping("/user/getall")
+    public JSONObject getUserList(@RequestParam Map<String, String> map){
+        String key = map.get("key");
+        int page = Integer.parseInt(map.get("page"));
+        int pageSize = Integer.parseInt(map.get("pageSize"));
+        return userManageService.getUserList(key, page, pageSize);
+    }
+
+
 
 }

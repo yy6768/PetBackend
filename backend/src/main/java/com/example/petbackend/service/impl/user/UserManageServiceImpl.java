@@ -1,9 +1,13 @@
 package com.example.petbackend.service.impl.user;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.petbackend.mapper.UserMapper;
 import com.example.petbackend.pojo.User;
-import com.example.petbackend.service.user.account.UserManageService;
+import com.example.petbackend.service.user.manage.UserManageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -108,6 +112,23 @@ public class UserManageServiceImpl implements UserManageService {
         userMapper.updateById(user);
         map.put("error_message","success");
         return map;
+    }
+
+    @Override
+    public JSONObject getUserList(String key, int page, int pageSize)   {
+        IPage <User> userIPage = new Page<>(page, pageSize);
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.like("username", key);
+        userIPage = userMapper.selectPage(userIPage, userQueryWrapper);
+        List<User> users = userIPage.getRecords();
+        JSONObject results = new JSONObject();
+        if(users !=null && !users.isEmpty()) { //搜到的药品列表不为空
+            results.put("error_message", "success");
+            results.put("medicine_list", users);
+        } else{
+            results.put("error_message", "获取失败");
+        }
+        return results;
     }
 
 
