@@ -2,6 +2,7 @@ package com.example.petbackend.controller.illcase;
 
 import com.example.petbackend.service.illcase.CaseService;
 import com.example.petbackend.service.illcase.GetCaseService;
+import com.example.petbackend.service.illcase.UpdateCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,8 @@ public class IllCaseController {
     private CaseService caseService;
     @Autowired
     private GetCaseService getCaseService;
+    @Autowired
+    private UpdateCaseService updateCaseService;
 
     @PostMapping("/case/add")
     public Map<String,String> addCase(@RequestParam Map<String,String> map) throws ParseException {
@@ -85,5 +88,39 @@ public class IllCaseController {
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse(map.get("date"));
 
         return getCaseService.getByDateCase(date);
+    }
+
+    @PostMapping("/case/add_lab")
+    public Map<String,String> addLabCase(@RequestParam Map<String,String> map){
+        Integer cid= Integer.valueOf(map.get("cid"));
+        Integer lab_id= Integer.valueOf(map.get("lab_id"));
+        String lab_result=map.get("lab_result");
+        String lab_photo=map.get("lab_photo");
+
+        return updateCaseService.addLabCase(cid,lab_id,lab_result,lab_photo);
+    }
+
+    @DeleteMapping("/case/delete_lab")
+    public Map<String,String> deleteLabCase(@RequestParam Map<String,String> map){
+        Integer cid=Integer.valueOf(map.get("cid"));
+        Integer lab_id= Integer.valueOf(map.get("lab_id"));
+
+        return updateCaseService.deleteLabCase(cid,lab_id);
+    }
+
+    @PostMapping("/case/add_medicine")
+    public Map<String,String> addMedicineCase(@RequestParam Map<String,String> map){
+        Integer cid= Integer.valueOf(map.get("cid"));
+        Integer medicine_id= Integer.valueOf(map.get("medicine_id"));
+
+        return updateCaseService.addMedicineCase(cid,medicine_id);
+    }
+
+    @DeleteMapping("/case/delete_medicine")
+    public Map<String,String> deleteMedicineCase(@RequestParam Map<String,String> map){
+        Integer cid=Integer.valueOf(map.get("cid"));
+        Integer medicine_id= Integer.valueOf(map.get("medicine_id"));
+
+        return updateCaseService.deleteMedicineCase(cid,medicine_id);
     }
 }
