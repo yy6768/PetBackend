@@ -15,4 +15,7 @@ public interface CaseService {
     Map<String,String> deleteCase(Integer cid);
 
     Map<String,Object> getAllCase();
+
+    Map<String, String> getByIdCase(Integer cid);
+
 }

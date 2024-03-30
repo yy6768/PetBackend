@@ -84,4 +84,19 @@ public class CaseServiceImpl implements CaseService {
         return obj;
 
     }
+
+    @Override
+    public Map<String, String> getByIdCase(Integer cid) {
+        Illcase illcase = caseMapper.selectById(cid);
+        Map<String,String> caseMap=new HashMap<>();
+        if(illcase!=null){
+            caseMap.put("error_message", "success");
+        }
+        else{
+            caseMap.put("error_message", "update fail");
+        }
+        caseMap.put("illcase", String.valueOf(illcase));
+
+        return caseMap;
+    }
 }
