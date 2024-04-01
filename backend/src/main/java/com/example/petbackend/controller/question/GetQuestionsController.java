@@ -17,15 +17,41 @@ public class GetQuestionsController {
     private GetQuestionsService getQuestionsService;
 
     /**
-     * 带搜索值分页获取题目列表
+     * 按照题目搜索分页返回题目列表
      * @param map
      * @return
      */
-    @GetMapping("/getAllQuestion")
-    public Map<String, Object> getAllQuestion(@RequestParam Map<String, String> map){
+    @GetMapping("/getAllQuestionByDescription")
+    public Map<String, Object> getAllQuestionByDescription(@RequestParam Map<String, String> map){
         Integer page = Integer.valueOf(map.get("page"));
         Integer pageSize = Integer.valueOf(map.get("pageSize"));
         String key = map.get("key");
-        return getQuestionsService.getAllQuestion(page, pageSize, key);
+        return getQuestionsService.getAllQuestionByDescription(page, pageSize, key);
     }
+
+    /**
+     * 按照病名搜索分页返回题目列表
+     * @param map
+     * @return
+     */
+    @GetMapping("/getAllQuestionByIll")
+    public Map<String, Object> getAllQuestionByIll(@RequestParam Map<String, String> map){
+        Integer page = Integer.valueOf(map.get("page"));
+        Integer pageSize = Integer.valueOf(map.get("pageSize"));
+        String key = map.get("key");
+        return getQuestionsService.getAllQuestionByIll(page,pageSize,key);
+    }
+
+    /**
+     * 按照qid返回题目详情
+     * @param map
+     * @return
+     */
+    @GetMapping("/getQuestionByQid")
+    public Map<String, Object> getQuestionByQid(@RequestParam Map<String, String> map){
+        Integer qid = Integer.valueOf(map.get("qid"));
+        return getQuestionsService.getQuestionByQid(qid);
+    }
+
+
 }

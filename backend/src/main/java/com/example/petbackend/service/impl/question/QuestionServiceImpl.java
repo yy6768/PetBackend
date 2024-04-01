@@ -1,10 +1,11 @@
 package com.example.petbackend.service.impl.question;
 
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.petbackend.dto.QuestionDTO;
+import com.example.petbackend.mapper.CateMapper;
+import com.example.petbackend.mapper.IllMapper;
 import com.example.petbackend.mapper.QuestionMapper;
+import com.example.petbackend.pojo.Cate;
+import com.example.petbackend.pojo.Ill;
 import com.example.petbackend.pojo.Question;
 import com.example.petbackend.service.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,18 +21,37 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Autowired
     QuestionMapper questionMapper;
+    @Autowired
+    CateMapper cateMapper;
+    @Autowired
+    IllMapper illMapper;
 
     //添加题目
     @Override
-    public Map<String, String> addQuestion(Integer cate_id, Integer ill_id, String description,
+    public Map<String, Object> addQuestion(Integer cate_id, Integer ill_id, String description,
                                            Integer answer, Integer mark, String content_a,
                                            String content_b, String content_c, String content_d){
         Question question = new Question(cate_id, ill_id, description, answer, mark,
                                          content_a, content_b, content_c, content_d);
         questionMapper.insert(question);
-        Map<String, String> questionMap = new HashMap<>();
+        Cate cate = cateMapper.selectById(cate_id);
+        Ill ill = illMapper.selectById(ill_id);
+        QuestionDTO questionDTO = new QuestionDTO();
+        questionDTO.setQid(question.getQid());
+        questionDTO.setCateID(cate_id);
+        questionDTO.setCateName(cate.getCateName());
+        questionDTO.setIllId(ill_id);
+        questionDTO.setIllName(ill.getIllName());
+        questionDTO.setDescription(description);
+        questionDTO.setMark(mark);
+        questionDTO.setAnswer(answer);
+        questionDTO.setContentA(content_a);
+        questionDTO.setContentB(content_b);
+        questionDTO.setContentC(content_c);
+        questionDTO.setContentD(content_d);
+        Map<String, Object> questionMap = new HashMap<>();
         questionMap.put("error_message", "success");
-        questionMap.put("qid", String.valueOf(question.getQid()));
+        questionMap.put("question", questionDTO);
         return questionMap;
     }
 

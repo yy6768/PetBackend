@@ -29,7 +29,7 @@ public class MedicineServiceImpl implements MedicineService {
         medicineMap.put("error_message", "success");
         medicineMap.put("medicine_id", String.valueOf(medicine.getMedicineId()));
         return medicineMap;
-    };
+    }
 
     //修改药品费用
     @Override
@@ -49,7 +49,7 @@ public class MedicineServiceImpl implements MedicineService {
         }
         medicineMap.put("error_message", msg);
         return medicineMap;
-    };
+    }
 
     //删除药品
     @Override
@@ -63,7 +63,7 @@ public class MedicineServiceImpl implements MedicineService {
             medicineMap.put("error_message", "success");
         }
         return medicineMap;
-    };
+    }
 
 
     //带搜索值分页获取药品列表
@@ -79,7 +79,7 @@ public class MedicineServiceImpl implements MedicineService {
             medicineMap.put("error_message", "success");
             medicineMap.put("medicine_list", medicineList);
         } else{
-            medicineMap.put("error_message", "获取失败");
+            medicineMap.put("error_message", "未找到对应药品");
         }
         JSONObject obj = new JSONObject(medicineMap);
         return obj;

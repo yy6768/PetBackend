@@ -1,7 +1,5 @@
 package com.example.petbackend.controller.question;
 
-
-import com.example.petbackend.service.question.GetQuestionsService;
 import com.example.petbackend.service.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +19,7 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/createQuestion")
-    public Map<String, String> addQuestion(@RequestParam Map<String, String> map){
+    public Map<String, Object> addQuestion(@RequestParam Map<String, String> map){
         Integer cate_id = Integer.valueOf(map.get("cate_id"));
         Integer ill_id = Integer.valueOf(map.get("ill_id"));
         String description = map.get("description");
