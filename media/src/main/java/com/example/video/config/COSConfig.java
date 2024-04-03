@@ -1,17 +1,32 @@
 package com.example.video.config;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import com.qcloud.cos.COSClient;
+import com.qcloud.cos.ClientConfig;
+import com.qcloud.cos.auth.BasicCOSCredentials;
+import com.qcloud.cos.auth.COSCredentials;
+import com.qcloud.cos.region.Region;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@Data
-@Component
-@ConfigurationProperties(prefix = "cos")
+@Configuration
 public class COSConfig {
-    private String baseUrl;
-    private String accessKey;
+    @Value("{cos.secretId}")
+    private String secretId;
+
+    @Value("{cos.secretKey}")
     private String secretKey;
-    private String regionName;
+
+    @Value("{cos.region}")
+    private String region;
+
+    @Value("{cos.bucketName}")
     private String bucketName;
-    private String folderPrefix;
+
+    @Bean
+    public COSClient cosClient() {
+        COSCredentials cred = new BasicCOSCredentials(secretId, secretKey);
+        ClientConfig clientConfig = new ClientConfig(new Region(region));
+        return new COSClient(cred, clientConfig);
+    }
 }
