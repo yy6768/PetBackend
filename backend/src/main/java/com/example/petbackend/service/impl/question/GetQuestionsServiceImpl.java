@@ -31,11 +31,16 @@ public class GetQuestionsServiceImpl implements GetQuestionsService {
     @Autowired
     IllMapper illMapper;
     //按照题目搜索分页返回题目列表
-    public Map<String, Object> getAllQuestionByDescription(Integer page, Integer pageSize, String key){
+    public Map<String, Object> getAllQuestionByDescription(Integer page, Integer pageSize, String key, Integer cate_id, Integer ill_id){
         List<QuestionDTO> questionDTOList = new ArrayList<>();
         IPage<Question> questionPage = new Page<>(page, pageSize);
+
+        //根据key，cate_id, ill_id来确定queryWrapper
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
-        questionQueryWrapper.like("description", key);
+        if (key != null && !key.isEmpty()) questionQueryWrapper.like("description", key);
+        if (cate_id != -1) questionQueryWrapper.eq("cate_id", cate_id);
+        if (ill_id != -1) questionQueryWrapper.eq("ill_id", ill_id);
+
         questionPage = questionMapper.selectPage(questionPage, questionQueryWrapper);
         List<Question> questionList = questionPage.getRecords();
         for(Question question: questionList){

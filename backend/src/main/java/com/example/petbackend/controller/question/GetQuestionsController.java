@@ -25,8 +25,20 @@ public class GetQuestionsController {
     public Map<String, Object> getAllQuestionByDescription(@RequestParam Map<String, String> map){
         Integer page = Integer.valueOf(map.get("page"));
         Integer pageSize = Integer.valueOf(map.get("pageSize"));
-        String key = map.get("key");
-        return getQuestionsService.getAllQuestionByDescription(page, pageSize, key);
+        String key = map.containsKey("key") ? map.get("key") : null;
+        Integer cate_id = -1;
+        if(map.containsKey("cate_id")){
+            if(!map.get("cate_id").isEmpty()){
+                cate_id = Integer.valueOf(map.get("cate_id"));
+            }
+        }
+        Integer ill_id = -1;
+        if(map.containsKey("ill_id")){
+            if(!map.get("ill_id").isEmpty()){
+                ill_id = Integer.valueOf(map.get("ill_id"));
+            }
+        }
+        return getQuestionsService.getAllQuestionByDescription(page, pageSize, key, cate_id, ill_id);
     }
 
     /**

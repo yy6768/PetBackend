@@ -71,7 +71,7 @@ public class MedicineServiceImpl implements MedicineService {
     public  Map<String, Object> getAllMedicine(Integer page, Integer pageSize, String key){
         IPage<Medicine> medicinePage = new Page<>(page, pageSize);
         QueryWrapper<Medicine> medicineQueryWrapper = new QueryWrapper<>();
-        medicineQueryWrapper.like("medicine_name", key);
+        if(key != null && !key.isEmpty()) medicineQueryWrapper.like("medicine_name", key);
         medicinePage = medicineMapper.selectPage(medicinePage, medicineQueryWrapper);
         List<Medicine> medicineList = medicinePage.getRecords();
         Map<String, Object> medicineMap = new HashMap<>();
