@@ -10,6 +10,6 @@ import java.util.List;
 
 @Mapper
 public interface CateMapper extends BaseMapper<Cate> {
-    @Select("select cate_name from cate")
-    List<String> getAll();
+    @Select("select * from cate")
+    List<Cate> getAll();
 }
