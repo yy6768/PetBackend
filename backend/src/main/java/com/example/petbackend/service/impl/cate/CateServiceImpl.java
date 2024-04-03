@@ -19,7 +19,7 @@ public class CateServiceImpl implements CateService {
     @Override
     public Map<String, Object> getAllCate() {
         Map<String, Object> cateMap = new HashMap<>();
-        List<String> cateList =cateMapper.getAll();
+        List<Cate> cateList =cateMapper.getAll();
         if(cateList ==null){
             cateMap.put("error_message", "get all fail");
         }
