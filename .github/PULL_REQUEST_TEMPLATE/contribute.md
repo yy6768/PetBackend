@@ -1,3 +1,17 @@
+---
+
+name: 功能请求 
+
+about: 提出一个想法帮助我们改进 
+
+title: "[FEATURE] " 
+
+labels: enhancement assignees: '' 
+
+---
+
+ 
+
 ## 更新描述
 
 请包含一个简短的摘要说明您的PR解决了什么问题。如果这是关于一个开放问题，请在这里链接该问题。
