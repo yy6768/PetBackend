@@ -1,4 +1,4 @@
-package com.example.petbackend.dto;
+package com.example.petbackend.pojo;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName(value = "case_medicine")
-public class CaseMedicineDTO {
+public class CaseMedicine {
     private Integer cid;
     private Integer medicineId;
 }

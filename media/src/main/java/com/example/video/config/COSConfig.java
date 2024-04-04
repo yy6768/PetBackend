@@ -20,9 +20,6 @@ public class COSConfig {
     @Value("{cos.region}")
     private String region;
 
-    @Value("{cos.bucketName}")
-    private String bucketName;
-
     @Bean
     public COSClient cosClient() {
         COSCredentials cred = new BasicCOSCredentials(secretId, secretKey);

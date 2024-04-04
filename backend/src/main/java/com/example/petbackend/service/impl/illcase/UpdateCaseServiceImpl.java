@@ -1,11 +1,10 @@
 package com.example.petbackend.service.impl.illcase;
 
-import com.example.petbackend.dto.CaseLabDTO;
-import com.example.petbackend.dto.CaseMedicineDTO;
+import com.example.petbackend.pojo.CaseLab;
+import com.example.petbackend.pojo.CaseMedicine;
 import com.example.petbackend.mapper.CaseLabMapper;
 import com.example.petbackend.mapper.CaseMapper;
 import com.example.petbackend.mapper.CaseMedicineMapper;
-import com.example.petbackend.pojo.Illcase;
 import com.example.petbackend.service.illcase.UpdateCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,11 +22,11 @@ public class UpdateCaseServiceImpl implements UpdateCaseService {
     private CaseMedicineMapper caseMedicineMapper;
     @Override
     public Map<String, String> addLabCase(Integer cid, Integer lab_id, String lab_result, String lab_photo) {
-        CaseLabDTO caseLabDTO=new CaseLabDTO(cid,lab_id,lab_result,lab_photo);
+        CaseLab caseLab =new CaseLab(cid,lab_id,lab_result,lab_photo);
         Map<String,String> caseLabMap=new HashMap<>();
-        caseLabMapper.insert(caseLabDTO);
+        caseLabMapper.insert(caseLab);
         caseLabMap.put("error_message", "success");
-        caseLabMap.put("cid", String.valueOf(caseLabDTO.getCid()));
+        caseLabMap.put("cid", String.valueOf(caseLab.getCid()));
         return caseLabMap;
     }
 
@@ -45,11 +44,11 @@ public class UpdateCaseServiceImpl implements UpdateCaseService {
 
     @Override
     public Map<String, String> addMedicineCase(Integer cid, Integer medicine_id) {
-        CaseMedicineDTO caseMedicineDTO=new CaseMedicineDTO(cid,medicine_id);
+        CaseMedicine caseMedicine =new CaseMedicine(cid,medicine_id);
         Map<String,String> caseMedicineMap=new HashMap<>();
-        caseMedicineMapper.insert(caseMedicineDTO);
+        caseMedicineMapper.insert(caseMedicine);
         caseMedicineMap.put("error_message", "success");
-        caseMedicineMap.put("cid", String.valueOf(caseMedicineDTO.getCid()));
+        caseMedicineMap.put("cid", String.valueOf(caseMedicine.getCid()));
         return caseMedicineMap;
     }
 

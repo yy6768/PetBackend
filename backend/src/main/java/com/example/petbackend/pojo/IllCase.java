@@ -11,7 +11,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Illcase {
+public class IllCase {
     @TableId(type = IdType.AUTO)
     private Integer cid;
     private Integer uid;
@@ -23,7 +23,7 @@ public class Illcase {
     private String therapy;
     private String surgeryVideo;
 
-    public Illcase(Integer uid, Integer ill_id, Date date,
+    public IllCase(Integer uid, Integer ill_id, Date date,
                    String basic_situation, String photo, String result,
                    String therapy, String surgery_video){
         this.uid=uid;

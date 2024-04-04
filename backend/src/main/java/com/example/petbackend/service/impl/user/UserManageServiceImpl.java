@@ -127,7 +127,7 @@ public class UserManageServiceImpl implements UserManageService {
         JSONObject results = new JSONObject();
         if(users !=null && !users.isEmpty()) { //搜到的药品列表不为空
             results.put("error_message", "success");
-            results.put("medicine_list", users);
+            results.put("user_list", users);
         } else{
             results.put("error_message", "获取失败");
         }
