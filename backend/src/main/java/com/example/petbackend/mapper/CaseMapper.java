@@ -1,7 +1,7 @@
 package com.example.petbackend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.petbackend.pojo.Illcase;
+import com.example.petbackend.pojo.IllCase;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -9,27 +9,27 @@ import java.util.Date;
 import java.util.List;
 
 @Mapper
-public interface CaseMapper extends BaseMapper<Illcase> {
+public interface CaseMapper extends BaseMapper<IllCase> {
     @Select("select * from illcase")
-    List<Illcase> getAll();
+    List<IllCase> getAll();
 
     @Select("select * from illcase where ill_id in (select ill_id from ill where cate_id in(select cate_id from cate where cate_name=#{cateName}))")
-    List<Illcase> selectByCate(String cateName);
+    List<IllCase> selectByCate(String cateName);
 
     @Select("select * from illcase where ill_id in (select ill_id from ill where ill_name=#{illName})")
-    List<Illcase> selectByIll(String illName);
+    List<IllCase> selectByIll(String illName);
 
     @Select("select * from illcase where date=#{date}")
-    List<Illcase> selectByDate(Date date);
+    List<IllCase> selectByDate(Date date);
 
     @Select("select * from illcase order by cid")
-    List<Illcase> sortById();
+    List<IllCase> sortById();
 
     @Select("select * from illcase join user u on illcase.uid = u.uid order by username")
-    List<Illcase> sortByDoctor();
+    List<IllCase> sortByDoctor();
 
     @Select("select * from illcase order by date")
-    List<Illcase> sortByDate();
+    List<IllCase> sortByDate();
 
 
 }

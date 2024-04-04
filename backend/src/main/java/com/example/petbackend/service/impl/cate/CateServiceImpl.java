@@ -3,7 +3,6 @@ package com.example.petbackend.service.impl.cate;
 import com.alibaba.fastjson.JSONObject;
 import com.example.petbackend.mapper.CateMapper;
 import com.example.petbackend.pojo.Cate;
-import com.example.petbackend.pojo.Illcase;
 import com.example.petbackend.service.cate.CateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
