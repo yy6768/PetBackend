@@ -1,4 +1,4 @@
-package com.example.petbackend.config;
+package com.example.media.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

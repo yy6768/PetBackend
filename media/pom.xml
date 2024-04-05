@@ -11,8 +11,8 @@
 	<groupId>com.example</groupId>
 	<artifactId>media</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>video</name>
-	<description>video</description>
+	<name>media</name>
+	<description>media</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

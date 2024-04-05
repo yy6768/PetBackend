@@ -1,4 +1,4 @@
-package com.example.video.utils;
+package com.example.media.utils;
 
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.model.GeneratePresignedUrlRequest;
