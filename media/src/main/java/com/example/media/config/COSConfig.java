@@ -1,4 +1,4 @@
-package com.example.video.config;
+package com.example.media.config;
 
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
@@ -11,13 +11,13 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class COSConfig {
-    @Value("{cos.secretId}")
+    @Value("${cos.secretId}")
     private String secretId;
 
-    @Value("{cos.secretKey}")
+    @Value("${cos.secretKey}")
     private String secretKey;
 
-    @Value("{cos.region}")
+    @Value("${cos.region}")
     private String region;
 
     @Bean
