@@ -52,7 +52,7 @@ public class MediaStorageServiceTest {
         given(fileStorageService.uploadFile(mockFile)).willReturn(serviceResponse);
 
         // 执行文件上传的测试请求，并验证结果
-        mockMvc.perform(multipart("/case/upload").file(mockFile))
+        mockMvc.perform(multipart("/api/case/upload").file(mockFile))
                 .andExpect(status().isOk())
                 .andDo(print());
     }

@@ -23,7 +23,6 @@ public class COSConfig {
     @Bean
     public COSClient cosClient() {
         COSCredentials cred = new BasicCOSCredentials(secretId, secretKey);
-        System.out.print("Region:" + region);
         ClientConfig clientConfig = new ClientConfig(new Region(region));
         return new COSClient(cred, clientConfig);
     }
