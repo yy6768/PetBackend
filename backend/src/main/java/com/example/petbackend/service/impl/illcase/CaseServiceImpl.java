@@ -5,8 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.petbackend.mapper.CaseMapper;
+import com.example.petbackend.mapper.LabMapper;
+import com.example.petbackend.mapper.MedicineMapper;
+import com.example.petbackend.pojo.Cate;
 import com.example.petbackend.pojo.Illcase;
 import com.example.petbackend.pojo.Lab;
+import com.example.petbackend.pojo.Medicine;
 import com.example.petbackend.service.illcase.CaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +27,10 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     private CaseMapper caseMapper;
+    @Autowired
+    private LabMapper labMapper;
+    @Autowired
+    private MedicineMapper medicineMapper;
 
     @Override
     public Map<String, String> addCase(Integer uid, Integer ill_id, Date date,
@@ -79,7 +87,19 @@ public class CaseServiceImpl implements CaseService {
         IPage<Illcase> casePage = new Page<>(page, pageSize);
         QueryWrapper<Illcase> caseQueryWrapper = new QueryWrapper<>();
         caseQueryWrapper.like("case_name", search);
-        return getStringObjectMap(casePage, caseQueryWrapper, caseMapper);
+        casePage = caseMapper.selectPage(casePage, caseQueryWrapper);
+        Map<String, Object> caseMap = new HashMap<>();
+        List<Illcase> illcaseList =casePage.getRecords();
+        if(illcaseList !=null && !illcaseList.isEmpty()) {
+            caseMap.put("error_message", "success");
+            caseMap.put("case_list", illcaseList);
+            caseMap.put("total",caseQueryWrapper);
+        } else{
+            caseMap.put("error_message", "未找到对应case");
+        }
+
+        JSONObject obj = new JSONObject(caseMap);
+        return obj;
 
     }
 
@@ -96,5 +116,37 @@ public class CaseServiceImpl implements CaseService {
         caseMap.put("illcase", String.valueOf(illcase));
 
         return caseMap;
+    }
+
+    @Override
+    public Map<String, Object> getAllLab() {
+        Map<String, Object> labMap = new HashMap<>();
+        List<Lab> labList =labMapper.getAll();
+        if(labList ==null){
+            labMap.put("error_message", "get all fail");
+        }
+        else {
+            labMap.put("error_message", "success");
+        }
+        labMap.put("lab_list", labList);
+
+        JSONObject obj = new JSONObject(labMap);
+        return obj;
+    }
+
+    @Override
+    public Map<String, Object> getAllMedicine() {
+        Map<String, Object> medicineMap = new HashMap<>();
+        List<Medicine> medicineList =medicineMapper.getAll();
+        if(medicineList ==null){
+            medicineMap.put("error_message", "get all fail");
+        }
+        else {
+            medicineMap.put("error_message", "success");
+        }
+        medicineMap.put("medicine_list", medicineList);
+
+        JSONObject obj = new JSONObject(medicineMap);
+        return obj;
     }
 }

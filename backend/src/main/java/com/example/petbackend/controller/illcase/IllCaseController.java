@@ -151,5 +151,16 @@ public class IllCaseController {
         return sortCaseService.sortByDateCase(page,pageSize);
     }
 
+    @GetMapping("/case/get_all_lab")
+    public Map<String, Object> getAllLab(){
+
+        return caseService.getAllLab();
+    }
+
+    @GetMapping("/case/get_all_medicine")
+    public Map<String, Object> getAllMedicine(){
+
+        return caseService.getAllMedicine();
+    }
 
 }

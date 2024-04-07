@@ -18,4 +18,7 @@ public interface CaseService {
 
     Map<String, String> getByIdCase(Integer cid);
 
+    Map<String, Object> getAllLab();
+
+    Map<String, Object> getAllMedicine();
 }

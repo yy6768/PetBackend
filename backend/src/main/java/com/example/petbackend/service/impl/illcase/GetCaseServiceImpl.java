@@ -77,6 +77,7 @@ public class GetCaseServiceImpl implements GetCaseService {
                 .in(Illcase::getIllId, illIdList));
         List<Illcase> illcaseList =casePage.getRecords();
         Map<String, Object> caseMap = new HashMap<>();
+        Integer total=
         return getStringObjectMapOut(caseMap, illcaseList);
     }
 
