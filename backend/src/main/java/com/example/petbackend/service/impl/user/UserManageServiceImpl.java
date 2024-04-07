@@ -1,6 +1,5 @@
 package com.example.petbackend.service.impl.user;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -128,6 +127,7 @@ public class UserManageServiceImpl implements UserManageService {
         if(users !=null && !users.isEmpty()) { //搜到的药品列表不为空
             results.put("error_message", "success");
             results.put("user_list", users);
+            results.put("total", userMapper.selectCount(userQueryWrapper));
         } else{
             results.put("error_message", "获取失败");
         }
