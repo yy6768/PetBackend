@@ -1,8 +1,12 @@
 package com.example.petbackend.service.impl.illcase;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.petbackend.mapper.CaseMapper;
-import com.example.petbackend.pojo.IllCase;
+import com.example.petbackend.pojo.Illcase;
+import com.example.petbackend.pojo.Lab;
 import com.example.petbackend.service.illcase.CaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +15,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.example.petbackend.service.impl.illcase.GetCaseServiceImpl.getStringObjectMap;
 
 @Service
 public class CaseServiceImpl implements CaseService {
@@ -23,7 +29,7 @@ public class CaseServiceImpl implements CaseService {
                                        String basic_situation, String photo,
                                        String result, String therapy,
                                        String surgery_video) {
-        IllCase illcase = new IllCase(uid,ill_id,date,basic_situation,photo,result,
+        Illcase illcase = new Illcase(uid,ill_id,date,basic_situation,photo,result,
                 therapy,surgery_video);
         Map<String,String> caseMap=new HashMap<>();
         caseMapper.insert(illcase);
@@ -36,7 +42,7 @@ public class CaseServiceImpl implements CaseService {
     public Map<String, String> updateCase(Integer cid, Integer ill_id,
                                           String basic_situation, String result,
                                           String therapy) {
-        IllCase illcase = caseMapper.selectById(cid);
+        Illcase illcase = caseMapper.selectById(cid);
         int res=0;
         if(illcase!=null){
             illcase.setCid(cid);
@@ -69,31 +75,23 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Map<String, Object> getAllCase() {
-        Map<String, Object> caseMap = new HashMap<>();
-        List<IllCase> illCaseList =caseMapper.getAll();
-        if(illCaseList ==null){
-            caseMap.put("error_message", "get all fail");
-        }
-        else {
-            caseMap.put("error_message", "success");
-        }
-        caseMap.put("case_list", illCaseList);
-
-        JSONObject obj = new JSONObject(caseMap);
-        return obj;
+    public Map<String, Object> getAllCase(Integer page, Integer pageSize,String search) {
+        IPage<Illcase> casePage = new Page<>(page, pageSize);
+        QueryWrapper<Illcase> caseQueryWrapper = new QueryWrapper<>();
+        caseQueryWrapper.like("case_name", search);
+        return getStringObjectMap(casePage, caseQueryWrapper, caseMapper);
 
     }
 
     @Override
     public Map<String, String> getByIdCase(Integer cid) {
-        IllCase illcase = caseMapper.selectById(cid);
+        Illcase illcase = caseMapper.selectById(cid);
         Map<String,String> caseMap=new HashMap<>();
         if(illcase!=null){
             caseMap.put("error_message", "success");
         }
         else{
-            caseMap.put("error_message", "update fail");
+            caseMap.put("error_message", "get case by id fail");
         }
         caseMap.put("illcase", String.valueOf(illcase));
 
