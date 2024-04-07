@@ -1,6 +1,7 @@
 package com.example.petbackend.controller.paper;
 
 import com.example.petbackend.service.paper.PaperService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,8 @@ public class PaperController {
     private PaperService paperService;
 
     //添加试卷
-    @SneakyThrows
     @PostMapping("/paper/add")
-    public Map<String, String> addPaper(@RequestParam Map<String, String> map) throws ParseException {
+    public Map<String, String> addPaper(@RequestParam Map<String, String> map) throws ParseException{
         Integer uid = Integer.valueOf(map.get("uid"));
         String paper_name = map.get("paper_name");
         Timestamp time = Timestamp.valueOf(map.get("time"));
@@ -30,8 +30,14 @@ public class PaperController {
         // 将question_list字符串转换为数组
         String questionListStr = map.get("question_list");
         ObjectMapper objectMapper = new ObjectMapper();
-        Integer[] question_list = objectMapper.readValue(questionListStr, Integer[].class);
-        return paperService.addPaper(uid, paper_name, time, date, question_list);
+        try {
+            Integer[] question_list = objectMapper.readValue(questionListStr, Integer[].class);
+            return paperService.addPaper(uid, paper_name, time, date, question_list);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            // 处理 JSON 解析异常
+            return null; // 或者抛出自定义异常，根据业务需求处理
+        }
     }
 
     //删除试卷
@@ -42,7 +48,6 @@ public class PaperController {
     }
 
     //修改试卷
-    @SneakyThrows
     @PostMapping("/paper/update")
     public Map<String, String> updatePaper(@RequestParam Map<String, String> map){
         Integer uid = Integer.valueOf(map.get("uid"));
@@ -52,8 +57,14 @@ public class PaperController {
         // 将question_list字符串转换为数组
         String questionListStr = map.get("question_list");
         ObjectMapper objectMapper = new ObjectMapper();
-        Integer[] question_list = objectMapper.readValue(questionListStr, Integer[].class);
-        return paperService.updatePaper(uid, paper_id,paper_name, time, question_list);
+        try {
+            Integer[] question_list = objectMapper.readValue(questionListStr, Integer[].class);
+            return paperService.updatePaper(uid, paper_id, paper_name, time, question_list);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            // 处理 JSON 解析异常
+            return null; // 或者抛出自定义异常，根据业务需求处理
+        }
 
     }
 
