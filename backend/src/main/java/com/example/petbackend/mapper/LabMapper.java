@@ -10,6 +10,4 @@ import java.util.List;
 
 @Mapper
 public interface LabMapper extends BaseMapper<Lab> {
-    @Select("select * from lab")
-    List<Lab> getAll();
 }

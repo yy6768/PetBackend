@@ -9,5 +9,5 @@ public interface LabService {
 
     Map<String,String> deleteLab(Integer lab_id);
 
-    Map<String,Object> getAllLab();
+    Map<String,Object> getAllLab(Integer page, Integer pageSize,String search);
 }

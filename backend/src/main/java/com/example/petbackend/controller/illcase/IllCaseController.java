@@ -57,9 +57,11 @@ public class IllCaseController {
     }
 
     @GetMapping("/case/getall")
-    public Map<String, Object> getAllCase(){
-
-        return caseService.getAllCase();
+    public Map<String, Object> getAllCase(@RequestParam Map<String, String> map){
+        Integer page = Integer.valueOf(map.get("page"));
+        Integer pageSize = Integer.valueOf(map.get("pageSize"));
+        String search = map.get("search");
+        return caseService.getAllCase(page, pageSize,search);
     }
 
     @GetMapping("/case/get_by_id")
@@ -71,23 +73,28 @@ public class IllCaseController {
 
     @GetMapping("/case/get_by_cate")
     public Map<String,Object> getByCateCase(@RequestParam Map<String,String> map){
+        Integer page = Integer.valueOf(map.get("page"));
+        Integer pageSize = Integer.valueOf(map.get("pageSize"));
         String cate_name=map.get("cate_name");
 
-        return getCaseService.getByCateCase(cate_name);
+        return getCaseService.getByCateCase(page, pageSize,cate_name);
     }
 
     @GetMapping("/case/get_by_ill")
     public Map<String,Object> getByIllCase(@RequestParam Map<String,String> map){
+        Integer page = Integer.valueOf(map.get("page"));
+        Integer pageSize = Integer.valueOf(map.get("pageSize"));
         String ill_name=map.get("ill_name");
 
-        return getCaseService.getByIllCase(ill_name);
+        return getCaseService.getByIllCase(page, pageSize,ill_name);
     }
 
     @GetMapping("/case/get_by_date")
     public Map<String,Object> getByDateCase(@RequestParam Map<String,String> map) throws ParseException {
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse(map.get("date"));
-
-        return getCaseService.getByDateCase(date);
+        Integer page = Integer.valueOf(map.get("page"));
+        Integer pageSize = Integer.valueOf(map.get("pageSize"));
+        return getCaseService.getByDateCase(page, pageSize,date);
     }
 
     @PostMapping("/case/add_lab")
@@ -125,20 +132,23 @@ public class IllCaseController {
     }
 
     @GetMapping("/case/sort_by_id")
-    public Map<String, Object> sortByIdCase(){
-
-        return sortCaseService.sortByIdCase();
+    public Map<String, Object> sortByIdCase(@RequestParam Map<String,String> map){
+        Integer page = Integer.valueOf(map.get("page"));
+        Integer pageSize = Integer.valueOf(map.get("pageSize"));
+        return sortCaseService.sortByIdCase(page,pageSize);
     }
     @GetMapping("/case/sort_by_doctor")
-    public Map<String, Object> sortByDoctorCase(){
-
-        return sortCaseService.sortByDoctorCase();
+    public Map<String, Object> sortByDoctorCase(@RequestParam Map<String,String> map){
+        Integer page = Integer.valueOf(map.get("page"));
+        Integer pageSize = Integer.valueOf(map.get("pageSize"));
+        return sortCaseService.sortByDoctorCase(page,pageSize);
     }
 
     @GetMapping("/case/sort_by_date")
-    public Map<String, Object> sortByDateCase(){
-
-        return sortCaseService.sortByDateCase();
+    public Map<String, Object> sortByDateCase(@RequestParam Map<String,String> map){
+        Integer page = Integer.valueOf(map.get("page"));
+        Integer pageSize = Integer.valueOf(map.get("pageSize"));
+        return sortCaseService.sortByDateCase(page,pageSize);
     }
 
 
