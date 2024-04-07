@@ -74,10 +74,12 @@ public class MedicineServiceImpl implements MedicineService {
         if(key != null && !key.isEmpty()) medicineQueryWrapper.like("medicine_name", key);
         medicinePage = medicineMapper.selectPage(medicinePage, medicineQueryWrapper);
         List<Medicine> medicineList = medicinePage.getRecords();
+        long total = medicineMapper.selectCount(medicineQueryWrapper);
         Map<String, Object> medicineMap = new HashMap<>();
         if(medicineList !=null && !medicineList.isEmpty()) { //搜到的药品列表不为空
             medicineMap.put("error_message", "success");
             medicineMap.put("medicine_list", medicineList);
+            medicineMap.put("total", total); // 添加记录总数
         } else{
             medicineMap.put("error_message", "未找到对应药品");
         }

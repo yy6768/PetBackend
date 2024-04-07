@@ -38,7 +38,8 @@ public class GetQuestionsController {
                 ill_id = Integer.valueOf(map.get("ill_id"));
             }
         }
-        return getQuestionsService.getAllQuestionByDescription(page, pageSize, key, cate_id, ill_id);
+        Integer sort = Integer.valueOf(map.get("sort"));
+        return getQuestionsService.getAllQuestionByDescription(page, pageSize, key, cate_id, ill_id, sort);
     }
 
     /**
