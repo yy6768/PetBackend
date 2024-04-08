@@ -4,15 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.petbackend.mapper.CaseMapper;
-import com.example.petbackend.mapper.LabMapper;
-import com.example.petbackend.mapper.MedicineMapper;
-import com.example.petbackend.pojo.Cate;
-import com.example.petbackend.pojo.Illcase;
-import com.example.petbackend.pojo.Lab;
-import com.example.petbackend.pojo.Medicine;
+import com.example.petbackend.mapper.*;
+import com.example.petbackend.pojo.*;
 import com.example.petbackend.service.illcase.CaseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -31,18 +27,33 @@ public class CaseServiceImpl implements CaseService {
     private LabMapper labMapper;
     @Autowired
     private MedicineMapper medicineMapper;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private IllMapper illMapper;
 
     @Override
     public Map<String, String> addCase(Integer uid, Integer ill_id, Date date,
                                        String basic_situation, String photo,
                                        String result, String therapy,
                                        String surgery_video) {
-        Illcase illcase = new Illcase(uid,ill_id,date,basic_situation,photo,result,
-                therapy,surgery_video);
         Map<String,String> caseMap=new HashMap<>();
-        caseMapper.insert(illcase);
-        caseMap.put("error_message", "success");
-        caseMap.put("cid", String.valueOf(illcase.getCid()));
+        User user=userMapper.selectById(uid);
+        Ill ill= illMapper.selectById(ill_id);
+        if(user==null||ill==null){
+            caseMap.put("error_message", "未找到对应user或ill");
+        }
+        else if(basic_situation.length()>255){
+            caseMap.put("error_message", "basic_situation是长文本");
+        }
+        else{
+            if(photo==null||photo.length()==0)photo="http://tecentapi.empty.image";
+            Illcase illcase = new Illcase(uid,ill_id,date,basic_situation,photo,result,
+                    therapy,surgery_video);
+            caseMapper.insert(illcase);
+            caseMap.put("error_message", "success");
+            caseMap.put("cid", String.valueOf(illcase.getCid()));
+        }
         return caseMap;
     }
 
@@ -86,14 +97,14 @@ public class CaseServiceImpl implements CaseService {
     public Map<String, Object> getAllCase(Integer page, Integer pageSize,String search) {
         IPage<Illcase> casePage = new Page<>(page, pageSize);
         QueryWrapper<Illcase> caseQueryWrapper = new QueryWrapper<>();
-        caseQueryWrapper.like("case_name", search);
+        caseQueryWrapper.like("basic_situation", search);
         casePage = caseMapper.selectPage(casePage, caseQueryWrapper);
         Map<String, Object> caseMap = new HashMap<>();
         List<Illcase> illcaseList =casePage.getRecords();
         if(illcaseList !=null && !illcaseList.isEmpty()) {
             caseMap.put("error_message", "success");
             caseMap.put("case_list", illcaseList);
-            caseMap.put("total",caseQueryWrapper);
+            caseMap.put("total", caseMapper.selectCount(caseQueryWrapper));
         } else{
             caseMap.put("error_message", "未找到对应case");
         }

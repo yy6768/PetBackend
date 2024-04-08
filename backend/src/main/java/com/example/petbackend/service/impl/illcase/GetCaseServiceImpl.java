@@ -1,6 +1,7 @@
 package com.example.petbackend.service.impl.illcase;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -43,27 +44,43 @@ public class GetCaseServiceImpl implements GetCaseService {
         QueryWrapper<Illcase> caseQueryWrapper = new QueryWrapper<>();
         caseQueryWrapper.like("date", date);
         return getStringObjectMap(casePage, caseQueryWrapper, caseMapper);
+//        List<Illcase> illcaseList = caseMapper.selectByDate(date);
+//        long total=illcaseList.size();
+//        int totalSize = illcaseList.size();
+//        int fromIndex = (page - 1) * pageSize;
+//        int toIndex = Math.min(fromIndex + pageSize, totalSize);
+//        List<Illcase> illcases =illcaseList.subList(fromIndex, toIndex);
+//        Map<String, Object> caseMap = new HashMap<>();
+//        if(!illcases.isEmpty()) {
+//            caseMap.put("error_message", "success");
+//            caseMap.put("case_list", illcases);
+//            caseMap.put("total",total);
+//        } else{
+//            caseMap.put("error_message", "未找到对应case");
+//        }
+//        return new JSONObject(caseMap);
     }
 
     @NotNull
     static Map<String, Object> getStringObjectMap(IPage<Illcase> casePage, QueryWrapper<Illcase> caseQueryWrapper, CaseMapper caseMapper) {
+        long total=caseMapper.selectCount(caseQueryWrapper);
         casePage = caseMapper.selectPage(casePage, caseQueryWrapper);
         Map<String, Object> caseMap = new HashMap<>();
         List<Illcase> illcaseList =casePage.getRecords();
-        return getStringObjectMapOut(caseMap, illcaseList);
+        return getStringObjectMapOut(caseMap, illcaseList,total);
     }
 
     @NotNull
-    static Map<String, Object> getStringObjectMapOut(Map<String, Object> caseMap, List<Illcase> illcaseList) {
+    static Map<String, Object> getStringObjectMapOut(Map<String, Object> caseMap, List<Illcase> illcaseList,long total) {
         if(illcaseList !=null && !illcaseList.isEmpty()) {
             caseMap.put("error_message", "success");
             caseMap.put("case_list", illcaseList);
+            caseMap.put("total",total);
         } else{
             caseMap.put("error_message", "未找到对应case");
         }
 
-        JSONObject obj = new JSONObject(caseMap);
-        return obj;
+        return new JSONObject(caseMap);
     }
 
     @NotNull
@@ -77,8 +94,8 @@ public class GetCaseServiceImpl implements GetCaseService {
                 .in(Illcase::getIllId, illIdList));
         List<Illcase> illcaseList =casePage.getRecords();
         Map<String, Object> caseMap = new HashMap<>();
-        Integer total=
-        return getStringObjectMapOut(caseMap, illcaseList);
+        long total=illIdList.size();
+        return getStringObjectMapOut(caseMap, illcaseList,total);
     }
 
 

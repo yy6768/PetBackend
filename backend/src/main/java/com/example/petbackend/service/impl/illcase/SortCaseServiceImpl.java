@@ -1,9 +1,11 @@
 package com.example.petbackend.service.impl.illcase;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.petbackend.dto.QuestionDTO;
 import com.example.petbackend.mapper.CaseMapper;
 import com.example.petbackend.pojo.Illcase;
 import com.example.petbackend.service.illcase.SortCaseService;
@@ -11,10 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SortCaseServiceImpl implements SortCaseService {
@@ -41,24 +40,20 @@ public class SortCaseServiceImpl implements SortCaseService {
 
     @NotNull
     private Map<String, Object> getStringObjectMap(Integer page, Integer pageSize, List<Illcase> illcaseList) {
-        List<Integer> caseIdList = new ArrayList<>();
-        for (Illcase illcase : illcaseList) {
-            caseIdList.add(illcase.getCid());
-        }
-        IPage<Illcase> casePage = new Page<>(page, pageSize);
-        casePage = caseMapper.selectPage(casePage, Wrappers.<Illcase>lambdaQuery()
-                .in(Illcase::getCid, caseIdList));
-        List<Illcase> illcases =casePage.getRecords();
+        long total=illcaseList.size();
+        int totalSize = illcaseList.size();
+        int fromIndex = (page - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalSize);
+        List<Illcase> illcases =illcaseList.subList(fromIndex, toIndex);
         Map<String, Object> caseMap = new HashMap<>();
-        if(illcases !=null && !illcases.isEmpty()) {
+        if(!illcases.isEmpty()) {
             caseMap.put("error_message", "success");
             caseMap.put("case_list", illcases);
+            caseMap.put("total",total);
         } else{
             caseMap.put("error_message", "未找到对应case");
         }
-
-        JSONObject obj = new JSONObject(caseMap);
-        return obj;
+        return new JSONObject(caseMap);
     }
 
 }

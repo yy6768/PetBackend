@@ -5,6 +5,7 @@ import com.example.petbackend.pojo.Ill;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -17,4 +18,5 @@ public interface IllMapper extends BaseMapper<Ill> {
 
     @Select("select * from ill where ill_name=#{illName}")
     List<Ill> selectByName(String illName);
+
 }
