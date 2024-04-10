@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class QuestionDTO {
     private int qid;
-    private Integer cateID;
+    private Integer cateId;
     private String cateName;
     private Integer illId;
     private String illName;

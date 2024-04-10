@@ -38,7 +38,7 @@ public class QuestionServiceImpl implements QuestionService {
         Ill ill = illMapper.selectById(ill_id);
         QuestionDTO questionDTO = new QuestionDTO();
         questionDTO.setQid(question.getQid());
-        questionDTO.setCateID(cate_id);
+        questionDTO.setCateId(cate_id);
         questionDTO.setCateName(cate.getCateName());
         questionDTO.setIllId(ill_id);
         questionDTO.setIllName(ill.getIllName());
