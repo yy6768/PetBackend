@@ -124,7 +124,7 @@ public class CaseServiceImpl implements CaseService {
         }
         if(!illcaseDTOList.isEmpty()) {
             caseMap.put("error_message", "success");
-            caseMap.put("case_list", illcaseList);
+            caseMap.put("case_list", illcaseDTOList);
             caseMap.put("total", caseMapper.selectCount(caseQueryWrapper));
         } else{
             caseMap.put("error_message", "未找到对应case");
