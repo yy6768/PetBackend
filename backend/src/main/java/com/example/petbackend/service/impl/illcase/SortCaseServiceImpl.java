@@ -2,7 +2,7 @@ package com.example.petbackend.service.impl.illcase;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.petbackend.mapper.CaseMapper;
-import com.example.petbackend.pojo.IllCase;
+import com.example.petbackend.pojo.Illcase;
 import com.example.petbackend.service.illcase.SortCaseService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,32 +19,32 @@ public class SortCaseServiceImpl implements SortCaseService {
     private CaseMapper caseMapper;
     @Override
     public Map<String, Object> sortByIdCase() {
-        List<IllCase> illCaseList =caseMapper.sortById();
-        return getStringObjectMap(illCaseList);
+        List<Illcase> illcaseList =caseMapper.sortById();
+        return getStringObjectMap(illcaseList);
     }
 
     @Override
     public Map<String, Object> sortByDoctorCase() {
-        List<IllCase> illCaseList =caseMapper.sortByDoctor();
-        return getStringObjectMap(illCaseList);
+        List<Illcase> illcaseList =caseMapper.sortByDoctor();
+        return getStringObjectMap(illcaseList);
     }
 
     @Override
     public Map<String, Object> sortByDateCase() {
-        List<IllCase> illCaseList =caseMapper.sortByDate();
-        return getStringObjectMap(illCaseList);
+        List<Illcase> illcaseList =caseMapper.sortByDate();
+        return getStringObjectMap(illcaseList);
     }
 
     @NotNull
-    private Map<String, Object> getStringObjectMap(List<IllCase> illCaseList) {
+    private Map<String, Object> getStringObjectMap(List<Illcase> illcaseList) {
         Map<String, Object> caseMap = new HashMap<>();
-        if(illCaseList ==null){
+        if(illcaseList ==null){
             caseMap.put("error_message", "sort list fail");
         }
         else {
             caseMap.put("error_message", "success");
         }
-        caseMap.put("case_list", illCaseList);
+        caseMap.put("case_list", illcaseList);
 
         JSONObject obj = new JSONObject(caseMap);
         return obj;
