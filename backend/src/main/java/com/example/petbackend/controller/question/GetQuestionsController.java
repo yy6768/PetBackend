@@ -52,7 +52,8 @@ public class GetQuestionsController {
         Integer page = Integer.valueOf(map.get("page"));
         Integer pageSize = Integer.valueOf(map.get("pageSize"));
         String key = map.get("key");
-        return getQuestionsService.getAllQuestionByIll(page,pageSize,key);
+        Integer sort = Integer.valueOf(map.get("sort"));
+        return getQuestionsService.getAllQuestionByIll(page,pageSize,key, sort);
     }
 
     /**

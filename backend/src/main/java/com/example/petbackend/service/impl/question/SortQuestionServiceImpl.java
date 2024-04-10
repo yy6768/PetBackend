@@ -38,7 +38,7 @@ public class SortQuestionServiceImpl implements SortQuestionService {
             Ill ill = illMapper.selectById(question.getIllId());
             QuestionDTO questionDTO = new QuestionDTO();
             questionDTO.setQid(question.getQid());
-            questionDTO.setCateID(question.getCateId());
+            questionDTO.setCateId(question.getCateId());
             questionDTO.setCateName(cate.getCateName());
             questionDTO.setIllId(question.getIllId());
             questionDTO.setIllName(ill.getIllName());

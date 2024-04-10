@@ -47,7 +47,7 @@ public class GetQuestionsServiceImpl implements GetQuestionsService {
                 Ill ill = illMapper.selectById(question.getIllId());
                 QuestionDTO questionDTO = new QuestionDTO();
                 questionDTO.setQid(question.getQid());
-                questionDTO.setCateID(question.getCateId());
+                questionDTO.setCateId(question.getCateId());
                 questionDTO.setCateName(cate.getCateName());
                 questionDTO.setIllId(question.getIllId());
                 questionDTO.setIllName(ill.getIllName());
@@ -80,7 +80,7 @@ public class GetQuestionsServiceImpl implements GetQuestionsService {
                 Ill ill = illMapper.selectById(question.getIllId());
                 QuestionDTO questionDTO = new QuestionDTO();
                 questionDTO.setQid(question.getQid());
-                questionDTO.setCateID(question.getCateId());
+                questionDTO.setCateId(question.getCateId());
                 questionDTO.setCateName(cate.getCateName());
                 questionDTO.setIllId(question.getIllId());
                 questionDTO.setIllName(ill.getIllName());
@@ -118,7 +118,7 @@ public class GetQuestionsServiceImpl implements GetQuestionsService {
     }
 
     //按照病名搜索分页返回题目列表
-    public Map<String, Object> getAllQuestionByIll(Integer page, Integer pageSize, String key){
+    public Map<String, Object> getAllQuestionByIll(Integer page, Integer pageSize, String key, Integer sort){
         QueryWrapper<Ill> illQueryWrapper = new QueryWrapper<>();
         illQueryWrapper.like("ill_name", key);
         List<Ill> illList = illMapper.selectList(illQueryWrapper);
@@ -126,41 +126,91 @@ public class GetQuestionsServiceImpl implements GetQuestionsService {
         for (Ill ill : illList) {
             illIdList.add(ill.getIllId());
         }
-        IPage<Question> questionPage = new Page<>(page, pageSize);
-        questionPage = questionMapper.selectPage(questionPage, Wrappers.<Question>lambdaQuery()
-                .in(Question::getIllId, illIdList));
         long total = questionMapper.selectCount(Wrappers.<Question>lambdaQuery()
                 .in(Question::getIllId, illIdList));
-        List<Question> questionList = questionPage.getRecords();
-        List<QuestionDTO> questionDTOList = new ArrayList<>();
-        for(Question question: questionList){
-            Cate cate = cateMapper.selectById(question.getCateId());
-            Ill ill = illMapper.selectById(question.getIllId());
-            QuestionDTO questionDTO = new QuestionDTO();
-            questionDTO.setQid(question.getQid());
-            questionDTO.setCateID(question.getCateId());
-            questionDTO.setCateName(cate.getCateName());
-            questionDTO.setIllId(question.getIllId());
-            questionDTO.setIllName(ill.getIllName());
-            questionDTO.setDescription((question.getDescription()));
-            questionDTO.setMark(question.getMark());
-            questionDTO.setAnswer(question.getAnswer());
-            questionDTO.setContentA(question.getContentA());
-            questionDTO.setContentB(question.getContentB());
-            questionDTO.setContentC(question.getContentC());
-            questionDTO.setContentD(question.getContentD());
-            questionDTOList.add(questionDTO);
+
+        //按题号排序
+        if(sort == 0){
+            IPage<Question> questionPage = new Page<>(page, pageSize);
+            questionPage = questionMapper.selectPage(questionPage, Wrappers.<Question>lambdaQuery()
+                    .in(Question::getIllId, illIdList));
+            List<Question> questionList = questionPage.getRecords();
+            List<QuestionDTO> questionDTOList = new ArrayList<>();
+            for(Question question: questionList){
+                Cate cate = cateMapper.selectById(question.getCateId());
+                Ill ill = illMapper.selectById(question.getIllId());
+                QuestionDTO questionDTO = new QuestionDTO();
+                questionDTO.setQid(question.getQid());
+                questionDTO.setCateId(question.getCateId());
+                questionDTO.setCateName(cate.getCateName());
+                questionDTO.setIllId(question.getIllId());
+                questionDTO.setIllName(ill.getIllName());
+                questionDTO.setDescription((question.getDescription()));
+                questionDTO.setMark(question.getMark());
+                questionDTO.setAnswer(question.getAnswer());
+                questionDTO.setContentA(question.getContentA());
+                questionDTO.setContentB(question.getContentB());
+                questionDTO.setContentC(question.getContentC());
+                questionDTO.setContentD(question.getContentD());
+                questionDTOList.add(questionDTO);
+            }
+            Map<String, Object> questionMap = new HashMap<>();
+            if(questionDTOList != null && !questionDTOList.isEmpty()){ //搜到的题目列表不为空
+                questionMap.put("error_message", "success");
+                questionMap.put("question_list", questionDTOList);
+                questionMap.put("total", total);
+            } else{
+                questionMap.put("error_message", "未找到对应题目");
+            }
+            JSONObject obj = new JSONObject(questionMap);
+            return obj;
         }
-        Map<String, Object> questionMap = new HashMap<>();
-        if(questionDTOList != null && !questionDTOList.isEmpty()){ //搜到的题目列表不为空
-            questionMap.put("error_message", "success");
-            questionMap.put("question_list", questionDTOList);
-            questionMap.put("total", total);
-        } else{
-            questionMap.put("error_message", "未找到对应题目");
+
+        //按病名排序
+        else{
+            List<Question> questionList = questionMapper.selectList(Wrappers.<Question>lambdaQuery()
+                    .in(Question::getIllId, illIdList));
+            List<QuestionDTO> questionDTOList = new ArrayList<>();
+            for(Question question: questionList){
+                Cate cate = cateMapper.selectById(question.getCateId());
+                Ill ill = illMapper.selectById(question.getIllId());
+                QuestionDTO questionDTO = new QuestionDTO();
+                questionDTO.setQid(question.getQid());
+                questionDTO.setCateId(question.getCateId());
+                questionDTO.setCateName(cate.getCateName());
+                questionDTO.setIllId(question.getIllId());
+                questionDTO.setIllName(ill.getIllName());
+                questionDTO.setDescription((question.getDescription()));
+                questionDTO.setMark(question.getMark());
+                questionDTO.setAnswer(question.getAnswer());
+                questionDTO.setContentA(question.getContentA());
+                questionDTO.setContentB(question.getContentB());
+                questionDTO.setContentC(question.getContentC());
+                questionDTO.setContentD(question.getContentD());
+                questionDTOList.add(questionDTO);
+            }
+            questionDTOList.sort(Comparator.comparing
+                    (QuestionDTO :: getIllName, Comparator.nullsLast(Comparator.naturalOrder())));
+            int totalSize = questionDTOList.size();
+            int totalPages = (int) Math.ceil((double) totalSize / pageSize);
+
+            int fromIndex = (page - 1) * pageSize;
+            int toIndex = Math.min(fromIndex + pageSize, totalSize);
+            List<QuestionDTO> pageList = questionDTOList.subList(fromIndex, toIndex);
+
+            Map<String, Object> pageMap = new HashMap<>();
+            if(pageList != null && !pageList.isEmpty()){ //题目列表不为空
+                pageMap.put("error_message", "success");
+                pageMap.put("question_list", pageList);
+                pageMap.put("total", total);
+            } else{
+                pageMap.put("error_message", "未找到对应题目");
+            }
+            JSONObject obj = new JSONObject(pageMap);
+            return obj;
+
         }
-        JSONObject obj = new JSONObject(questionMap);
-        return obj;
+
     }
 
     //按照qid返回题目详情
