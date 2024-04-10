@@ -1,5 +1,6 @@
 package com.example.petbackend.service.illcase;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
@@ -14,8 +15,13 @@ public interface CaseService {
 
     Map<String,String> deleteCase(Integer cid);
 
-    Map<String,Object> getAllCase();
+    Map<String,Object> getAllCase(Integer page, Integer pageSize,String search);
 
     Map<String, String> getByIdCase(Integer cid);
 
+    Map<String, Object> getAllLab();
+
+    Map<String, Object> getAllMedicine();
+
+    boolean createIllcaseIndex(String index) throws IOException;
 }

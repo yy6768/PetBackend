@@ -37,8 +37,10 @@ public class LabController {
     }
 
     @GetMapping("/lab/getall")
-    public Map<String, Object> getAllLab(){
-
-        return labService.getAllLab();
+    public Map<String, Object> getAllLab(@RequestParam Map<String, String> map){
+        Integer page = Integer.valueOf(map.get("page"));
+        Integer pageSize = Integer.valueOf(map.get("pageSize"));
+        String search = map.get("search");
+        return labService.getAllLab(page, pageSize,search);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.petbackend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.petbackend.pojo.Cate;
 import com.example.petbackend.pojo.Lab;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;

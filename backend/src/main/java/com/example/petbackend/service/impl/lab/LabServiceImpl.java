@@ -1,8 +1,12 @@
 package com.example.petbackend.service.impl.lab;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.petbackend.mapper.LabMapper;
 import com.example.petbackend.pojo.Lab;
+import com.example.petbackend.pojo.Medicine;
 import com.example.petbackend.service.lab.LabService;
 import com.example.petbackend.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,17 +63,20 @@ public class LabServiceImpl implements LabService {
     }
 
     @Override
-    public Map<String, Object> getAllLab() {
-
+    public Map<String, Object> getAllLab(Integer page, Integer pageSize,String search) {
+        IPage<Lab> labPage = new Page<>(page, pageSize);
+        QueryWrapper<Lab> labQueryWrapper = new QueryWrapper<>();
+        labQueryWrapper.like("lab_name", search);
+        labPage = labMapper.selectPage(labPage, labQueryWrapper);
         Map<String, Object> labMap = new HashMap<>();
-        List<Lab> labList=labMapper.getAll();
-        if(labList==null){
-            labMap.put("error_message", "get all fail");
-        }
-        else {
+        List<Lab> labList=labPage.getRecords();
+        if(labList !=null && !labList.isEmpty()) {
             labMap.put("error_message", "success");
+            labMap.put("lab_list", labList);
+            labMap.put("total",labMapper.selectCount(labQueryWrapper));
+        } else{
+            labMap.put("error_message", "未找到对应实验项目");
         }
-        labMap.put("lab_list", labList);
 
         JSONObject obj = new JSONObject(labMap);
         return obj;
