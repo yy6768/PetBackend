@@ -21,7 +21,7 @@ public class RoomServiceImpl implements RoomService {
            results.put("error_message", "room_name can't be empty");
            return results;
        }
-       QueryWrapper queryWrapper = new QueryWrapper();
+       QueryWrapper<Room> queryWrapper = new QueryWrapper<>();
        queryWrapper.eq("room_name", room_name);
        Room room = roomMapper.selectOne(queryWrapper);
        results.put("error_message", "success");
