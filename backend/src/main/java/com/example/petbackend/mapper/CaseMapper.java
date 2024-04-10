@@ -1,6 +1,7 @@
 package com.example.petbackend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.petbackend.pojo.Ill;
 import com.example.petbackend.pojo.Illcase;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -19,7 +20,10 @@ public interface CaseMapper extends BaseMapper<Illcase> {
     @Select("select * from illcase where ill_id in (select ill_id from ill where ill_name=#{illName})")
     List<Illcase> selectByIll(String illName);
 
-    @Select("select * from illcase where date=#{date}")
+//    @Select("select * from illcase where date=#{date}")
+//    List<Illcase> selectByDate(Date date);
+
+    @Select("select * from illcase where date like concat ('%',#{date},'%')")
     List<Illcase> selectByDate(Date date);
 
     @Select("select * from illcase order by cid")

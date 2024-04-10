@@ -73,6 +73,7 @@ public class LabServiceImpl implements LabService {
         if(labList !=null && !labList.isEmpty()) {
             labMap.put("error_message", "success");
             labMap.put("lab_list", labList);
+            labMap.put("total",labMapper.selectCount(labQueryWrapper));
         } else{
             labMap.put("error_message", "未找到对应实验项目");
         }
