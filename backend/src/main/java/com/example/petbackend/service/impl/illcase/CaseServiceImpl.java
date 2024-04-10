@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.petbackend.dto.IllcaseDTO;
+import com.example.petbackend.dto.QuestionDTO;
 import com.example.petbackend.mapper.*;
 import com.example.petbackend.pojo.*;
 import com.example.petbackend.service.illcase.CaseService;
@@ -18,10 +20,7 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.example.petbackend.service.impl.illcase.GetCaseServiceImpl.getStringObjectMap;
 
@@ -38,6 +37,8 @@ public class CaseServiceImpl implements CaseService {
     private UserMapper userMapper;
     @Autowired
     private IllMapper illMapper;
+    @Autowired
+    private CateMapper cateMapper;
 
     @Override
     public Map<String, String> addCase(Integer uid, Integer ill_id, Date date,
@@ -107,17 +108,29 @@ public class CaseServiceImpl implements CaseService {
         caseQueryWrapper.like("basic_situation", search);
         casePage = caseMapper.selectPage(casePage, caseQueryWrapper);
         Map<String, Object> caseMap = new HashMap<>();
-        List<Illcase> illcaseList =casePage.getRecords();
-        if(illcaseList !=null && !illcaseList.isEmpty()) {
+        List<Illcase> illcaseList=casePage.getRecords();
+        List<IllcaseDTO> illcaseDTOList =new ArrayList<>();
+        for(Illcase illcase: illcaseList){
+            Ill ill = illMapper.selectById(illcase.getIllId());
+            Cate cate = cateMapper.selectById(ill.getCateId());
+            User user=userMapper.selectById(illcase.getUid());
+            IllcaseDTO illcaseDTO = new IllcaseDTO();
+            illcaseDTO.setCid(illcase.getCid());
+            illcaseDTO.setDate(illcase.getDate());
+            illcaseDTO.setCate_name(cate.getCateName());
+            illcaseDTO.setUsername(user.getUsername());
+            illcaseDTO.setIll_name(ill.getIllName());
+            illcaseDTOList.add(illcaseDTO);
+        }
+        if(!illcaseDTOList.isEmpty()) {
             caseMap.put("error_message", "success");
-            caseMap.put("case_list", illcaseList);
+            caseMap.put("case_list", illcaseDTOList);
             caseMap.put("total", caseMapper.selectCount(caseQueryWrapper));
         } else{
             caseMap.put("error_message", "未找到对应case");
         }
 
-        JSONObject obj = new JSONObject(caseMap);
-        return obj;
+        return new JSONObject(caseMap);
 
     }
 
