@@ -17,7 +17,6 @@ public class IllController {
     @GetMapping("/ill/get_all_in_cate")
     public Map<String,Object> getAllInCateIll(@RequestParam Map<String,String> map){
         String cate_id=map.get("cate_id");
-
         return illService.getAllInCateIll(cate_id);
     }
 
