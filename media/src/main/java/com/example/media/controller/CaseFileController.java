@@ -11,13 +11,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/vid")
 public class CaseFileController {
     @Autowired
     private FileStorageService fileStorageService;
 
     @PostMapping("/case/upload")
-    public Map<String, String> uploadFile(@RequestParam("file") MultipartFile file) {
+    public Map<String, String> CaseUploadFile(@RequestParam("file") MultipartFile file) {
         return fileStorageService.uploadFile(file);
     }
 }
