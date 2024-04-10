@@ -4,13 +4,20 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.petbackend.mapper.CaseMapper;
-import com.example.petbackend.pojo.Illcase;
-import com.example.petbackend.pojo.Lab;
+import com.example.petbackend.mapper.*;
+import com.example.petbackend.pojo.*;
 import com.example.petbackend.service.illcase.CaseService;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,18 +30,37 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     private CaseMapper caseMapper;
+    @Autowired
+    private LabMapper labMapper;
+    @Autowired
+    private MedicineMapper medicineMapper;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private IllMapper illMapper;
 
     @Override
     public Map<String, String> addCase(Integer uid, Integer ill_id, Date date,
                                        String basic_situation, String photo,
                                        String result, String therapy,
                                        String surgery_video) {
-        Illcase illcase = new Illcase(uid,ill_id,date,basic_situation,photo,result,
-                therapy,surgery_video);
         Map<String,String> caseMap=new HashMap<>();
-        caseMapper.insert(illcase);
-        caseMap.put("error_message", "success");
-        caseMap.put("cid", String.valueOf(illcase.getCid()));
+        User user=userMapper.selectById(uid);
+        Ill ill= illMapper.selectById(ill_id);
+        if(user==null||ill==null){
+            caseMap.put("error_message", "未找到对应user或ill");
+        }
+        else if(basic_situation.length()>255){
+            caseMap.put("error_message", "basic_situation是长文本");
+        }
+        else{
+            if(photo==null||photo.length()==0)photo="http://tecentapi.empty.image";
+            Illcase illcase = new Illcase(uid,ill_id,date,basic_situation,photo,result,
+                    therapy,surgery_video);
+            caseMapper.insert(illcase);
+            caseMap.put("error_message", "success");
+            caseMap.put("cid", String.valueOf(illcase.getCid()));
+        }
         return caseMap;
     }
 
@@ -78,8 +104,20 @@ public class CaseServiceImpl implements CaseService {
     public Map<String, Object> getAllCase(Integer page, Integer pageSize,String search) {
         IPage<Illcase> casePage = new Page<>(page, pageSize);
         QueryWrapper<Illcase> caseQueryWrapper = new QueryWrapper<>();
-        caseQueryWrapper.like("case_name", search);
-        return getStringObjectMap(casePage, caseQueryWrapper, caseMapper);
+        caseQueryWrapper.like("basic_situation", search);
+        casePage = caseMapper.selectPage(casePage, caseQueryWrapper);
+        Map<String, Object> caseMap = new HashMap<>();
+        List<Illcase> illcaseList =casePage.getRecords();
+        if(illcaseList !=null && !illcaseList.isEmpty()) {
+            caseMap.put("error_message", "success");
+            caseMap.put("case_list", illcaseList);
+            caseMap.put("total", caseMapper.selectCount(caseQueryWrapper));
+        } else{
+            caseMap.put("error_message", "未找到对应case");
+        }
+
+        JSONObject obj = new JSONObject(caseMap);
+        return obj;
 
     }
 
@@ -96,5 +134,80 @@ public class CaseServiceImpl implements CaseService {
         caseMap.put("illcase", String.valueOf(illcase));
 
         return caseMap;
+    }
+
+    @Override
+    public Map<String, Object> getAllLab() {
+        Map<String, Object> labMap = new HashMap<>();
+        List<Lab> labList =labMapper.getAll();
+        if(labList ==null){
+            labMap.put("error_message", "get all fail");
+        }
+        else {
+            labMap.put("error_message", "success");
+        }
+        labMap.put("lab_list", labList);
+
+        JSONObject obj = new JSONObject(labMap);
+        return obj;
+    }
+
+    @Override
+    public Map<String, Object> getAllMedicine() {
+        Map<String, Object> medicineMap = new HashMap<>();
+        List<Medicine> medicineList =medicineMapper.getAll();
+        if(medicineList ==null){
+            medicineMap.put("error_message", "get all fail");
+        }
+        else {
+            medicineMap.put("error_message", "success");
+        }
+        medicineMap.put("medicine_list", medicineList);
+
+        JSONObject obj = new JSONObject(medicineMap);
+        return obj;
+    }
+
+    @Override
+    public boolean createIllcaseIndex(String index) throws IOException {
+        CreateIndexRequest createIndexRequest = new CreateIndexRequest(index);
+        createIndexRequest.settings(Settings.builder()
+                .put("index.number_of_shards", 1)
+                .put("index.number_of_replicas", 0)
+        );
+        createIndexRequest.mapping("{\n" +
+                "  \"properties\": {\n" +
+                "    \"cid\": {\n" +
+                "      \"type\": \"integer\"\n" +
+                "    },\n" +
+                "    \"username\": {\n" +
+                "      \"type\": \"string\"\n" +
+                "    },\n" +
+                "    \"ill_name\": {\n" +
+                "      \"type\": \"string\"\n" +
+                "    },\n" +
+                "    \"date\": {\n" +
+                "      \"type\": \"date\"\n" +
+                "    },\n" +
+                "    \"basic_situation\": {\n" +
+                "      \"type\": \"string\"\n" +
+                "    }\n" +
+                "    \"photo\": {\n" +
+                "      \"type\": \"string\"\n" +
+                "    },\n" +
+                "    \"result\": {\n" +
+                "      \"type\": \"string\"\n" +
+                "    },\n" +
+                "    \"therapy\": {\n" +
+                "      \"type\": \"string\"\n" +
+                "    },\n" +
+                "    \"surgery_video\": {\n" +
+                "      \"type\": \"string\"\n" +
+                "    },\n" +
+                "  }\n" +
+                "}", XContentType.JSON);
+        RestHighLevelClient client = null;
+        CreateIndexResponse createIndexResponse = client.indices().create(createIndexRequest, RequestOptions.DEFAULT);
+        return createIndexResponse.isAcknowledged();
     }
 }

@@ -4,6 +4,7 @@ import com.example.petbackend.service.illcase.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -151,5 +152,21 @@ public class IllCaseController {
         return sortCaseService.sortByDateCase(page,pageSize);
     }
 
+    @GetMapping("/case/get_all_lab")
+    public Map<String, Object> getAllLab(){
+
+        return caseService.getAllLab();
+    }
+
+    @GetMapping("/case/get_all_medicine")
+    public Map<String, Object> getAllMedicine(){
+
+        return caseService.getAllMedicine();
+    }
+
+    @PutMapping("/case/new_index")
+    public boolean createIllcaseIndex(String index) throws IOException {
+        return caseService.createIllcaseIndex(index);
+    }
 
 }
