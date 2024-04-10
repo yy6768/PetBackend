@@ -7,10 +7,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.petbackend.mapper.*;
 import com.example.petbackend.pojo.*;
 import com.example.petbackend.service.illcase.CaseService;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -159,5 +166,48 @@ public class CaseServiceImpl implements CaseService {
 
         JSONObject obj = new JSONObject(medicineMap);
         return obj;
+    }
+
+    @Override
+    public boolean createIllcaseIndex(String index) throws IOException {
+        CreateIndexRequest createIndexRequest = new CreateIndexRequest(index);
+        createIndexRequest.settings(Settings.builder()
+                .put("index.number_of_shards", 1)
+                .put("index.number_of_replicas", 0)
+        );
+        createIndexRequest.mapping("{\n" +
+                "  \"properties\": {\n" +
+                "    \"cid\": {\n" +
+                "      \"type\": \"integer\"\n" +
+                "    },\n" +
+                "    \"username\": {\n" +
+                "      \"type\": \"string\"\n" +
+                "    },\n" +
+                "    \"ill_name\": {\n" +
+                "      \"type\": \"string\"\n" +
+                "    },\n" +
+                "    \"date\": {\n" +
+                "      \"type\": \"date\"\n" +
+                "    },\n" +
+                "    \"basic_situation\": {\n" +
+                "      \"type\": \"string\"\n" +
+                "    }\n" +
+                "    \"photo\": {\n" +
+                "      \"type\": \"string\"\n" +
+                "    },\n" +
+                "    \"result\": {\n" +
+                "      \"type\": \"string\"\n" +
+                "    },\n" +
+                "    \"therapy\": {\n" +
+                "      \"type\": \"string\"\n" +
+                "    },\n" +
+                "    \"surgery_video\": {\n" +
+                "      \"type\": \"string\"\n" +
+                "    },\n" +
+                "  }\n" +
+                "}", XContentType.JSON);
+        RestHighLevelClient client = null;
+        CreateIndexResponse createIndexResponse = client.indices().create(createIndexRequest, RequestOptions.DEFAULT);
+        return createIndexResponse.isAcknowledged();
     }
 }
