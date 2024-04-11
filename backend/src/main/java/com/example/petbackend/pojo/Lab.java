@@ -15,9 +15,5 @@ public class Lab {
     private Integer labId;
     private String labName;
     private Double labCost;
-
-    public Lab(String lab_name, Double lab_cost){
-        this.labName=lab_name;
-        this.labCost=lab_cost;
-    }
+    private String description;
 }
