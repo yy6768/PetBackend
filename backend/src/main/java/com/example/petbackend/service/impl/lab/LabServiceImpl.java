@@ -6,9 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.petbackend.mapper.LabMapper;
 import com.example.petbackend.pojo.Lab;
-import com.example.petbackend.pojo.Medicine;
 import com.example.petbackend.service.lab.LabService;
-import com.example.petbackend.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +21,8 @@ public class LabServiceImpl implements LabService {
     private LabMapper labMapper;
 
     @Override
-    public Map<String, String> addLab(String lab_name, Double lab_cost) {
-        Lab lab = new Lab(lab_name, lab_cost);
+    public Map<String, String> addLab(String lab_name, Double lab_cost, String description) {
+        Lab lab = new Lab(null, lab_name, lab_cost, description);
         labMapper.insert(lab);
         Map<String,String> labMap=new HashMap<>();
         labMap.put("error_message", "success");
@@ -33,11 +31,12 @@ public class LabServiceImpl implements LabService {
     }
 
     @Override
-    public Map<String, String> updateLab(Integer lab_id, Double lab_cost) {
+    public Map<String, String> updateLab(Integer lab_id, Double lab_cost, String description) {
         Lab lab = labMapper.selectById(lab_id);
-        int res=0;
-        if(lab!=null){
+        int res = 0;
+        if(lab != null){
             lab.setLabCost(lab_cost);
+            lab.setDescription(description);
             res=labMapper.updateById(lab);
         }
         Map<String,String> labMap=new HashMap<>();
@@ -78,7 +77,6 @@ public class LabServiceImpl implements LabService {
             labMap.put("error_message", "未找到对应实验项目");
         }
 
-        JSONObject obj = new JSONObject(labMap);
-        return obj;
+        return new JSONObject(labMap);
     }
 }
