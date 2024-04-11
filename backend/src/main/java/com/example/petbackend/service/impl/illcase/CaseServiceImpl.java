@@ -48,8 +48,10 @@ public class CaseServiceImpl implements CaseService {
         if(user==null||ill==null){
             caseMap.put("error_message", "未找到对应user或ill");
         }
-        else if(basic_situation.length()>255){
-            caseMap.put("error_message", "basic_situation是长文本");
+        else if(basic_situation!=null){
+            if(basic_situation.length()>255){
+                caseMap.put("error_message", "basic_situation是长文本");
+            }
         }
         else{
             if(photo==null||photo.length()==0)photo="http://tecentapi.empty.image";
