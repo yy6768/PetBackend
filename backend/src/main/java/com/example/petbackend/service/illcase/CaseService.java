@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.Map;
 
 public interface CaseService {
-    Map<String,String> addCase(Integer uid, Integer ill_id, Date date,
+    Map<String,String> addCase(String username, String ill_name, Date date,
                                String basic_situation, String photo, String result,
                                String therapy, String surgery_video);
 
