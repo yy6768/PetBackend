@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
 
@@ -27,7 +29,8 @@ public class IllCaseController {
         String username= map.get("username");
         String ill_name= map.get("ill_name");
         //String转Date
-        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(map.get("date"));
+        LocalDateTime localDateTime=LocalDateTime.now();
+        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
         return caseService.addCase(username,ill_name,date);
     }
