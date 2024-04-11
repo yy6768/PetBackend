@@ -76,9 +76,9 @@ public class IllCaseController {
     public Map<String,Object> getByCateCase(@RequestParam Map<String,String> map){
         Integer page = Integer.valueOf(map.get("page"));
         Integer pageSize = Integer.valueOf(map.get("pageSize"));
-        String cate_name=map.get("cate_name");
+        Integer cate_id= Integer.valueOf(map.get("cate_id"));
 
-        return getCaseService.getByCateCase(page, pageSize,cate_name);
+        return getCaseService.getByCateCase(page, pageSize,cate_id);
     }
 
     @GetMapping("/case/get_by_ill")

@@ -26,9 +26,11 @@ public class GetCaseServiceImpl implements GetCaseService {
     private CaseMapper caseMapper;
     @Autowired
     private IllMapper illMapper;
+    @Autowired
+    private CateMapper cateMapper;
     @Override
-    public Map<String, Object> getByCateCase(Integer page, Integer pageSize,String cate_name) {
-        List<Ill> illList = illMapper.selectByCate(cate_name);
+    public Map<String, Object> getByCateCase(Integer page, Integer pageSize,Integer cate_id) {
+        List<Ill> illList = illMapper.selectByCate(cateMapper.selectById(cate_id).getCateName());
         return getStringObjectMap(page, pageSize, illList);
     }
 
@@ -44,21 +46,6 @@ public class GetCaseServiceImpl implements GetCaseService {
         QueryWrapper<Illcase> caseQueryWrapper = new QueryWrapper<>();
         caseQueryWrapper.like("date", date);
         return getStringObjectMap(casePage, caseQueryWrapper, caseMapper);
-//        List<Illcase> illcaseList = caseMapper.selectByDate(date);
-//        long total=illcaseList.size();
-//        int totalSize = illcaseList.size();
-//        int fromIndex = (page - 1) * pageSize;
-//        int toIndex = Math.min(fromIndex + pageSize, totalSize);
-//        List<Illcase> illcases =illcaseList.subList(fromIndex, toIndex);
-//        Map<String, Object> caseMap = new HashMap<>();
-//        if(!illcases.isEmpty()) {
-//            caseMap.put("error_message", "success");
-//            caseMap.put("case_list", illcases);
-//            caseMap.put("total",total);
-//        } else{
-//            caseMap.put("error_message", "未找到对应case");
-//        }
-//        return new JSONObject(caseMap);
     }
 
     @NotNull
