@@ -9,9 +9,9 @@ public interface CaseService {
                                String basic_situation, String photo, String result,
                                String therapy, String surgery_video);
 
-    Map<String,String> updateCase(Integer cid,Integer ill_id,
+    Map<String,String> updateCase(Integer cid,
                                   String basic_situation,String result,
-                                  String therapy);
+                                  String therapy,String surgery_video);
 
     Map<String,String> deleteCase(Integer cid);
 

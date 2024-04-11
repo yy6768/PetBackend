@@ -48,12 +48,13 @@ public class CaseServiceImpl implements CaseService {
         if(user==null||ill==null){
             caseMap.put("error_message", "未找到对应user或ill");
         }
-        else if(basic_situation!=null){
-            if(basic_situation.length()>255){
+        else{
+            if(basic_situation==null){
+                basic_situation="暂无内容";
+            }
+            else if(basic_situation.length()>255){
                 caseMap.put("error_message", "basic_situation是长文本");
             }
-        }
-        else{
             if(photo==null||photo.length()==0)photo="http://tecentapi.empty.image";
             Illcase illcase = new Illcase(user.getUid(), ill.getIllId(), date,basic_situation,photo,result,
                     therapy,surgery_video);
@@ -65,17 +66,17 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Map<String, String> updateCase(Integer cid, Integer ill_id,
+    public Map<String, String> updateCase(Integer cid,
                                           String basic_situation, String result,
-                                          String therapy) {
+                                          String therapy,String surgery_video) {
         Illcase illcase = caseMapper.selectById(cid);
         int res=0;
         if(illcase!=null){
             illcase.setCid(cid);
-            illcase.setIllId(ill_id);
             illcase.setBasicSituation(basic_situation);
             illcase.setResult(result);
             illcase.setTherapy(therapy);
+            illcase.setSurgeryVideo(surgery_video);
             res=caseMapper.updateById(illcase);
         }
         Map<String,String> caseMap=new HashMap<>();

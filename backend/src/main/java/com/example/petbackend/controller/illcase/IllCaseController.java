@@ -42,12 +42,12 @@ public class IllCaseController {
     @PostMapping("/case/update")
     public Map<String,String> updateCase(@RequestParam Map<String,String> map){
         Integer cid= Integer.valueOf(map.get("cid"));
-        Integer ill_id= Integer.valueOf(map.get("ill_id"));
         String basic_situation=map.get("basic_situation");
         String result=map.get("result");
         String therapy=map.get("therapy");
+        String surgery_video=map.get("surgery_video");
 
-        return caseService.updateCase(cid,ill_id,basic_situation,result,therapy);
+        return caseService.updateCase(cid,basic_situation,result,therapy,surgery_video);
     }
 
     @DeleteMapping("/case/delete")
