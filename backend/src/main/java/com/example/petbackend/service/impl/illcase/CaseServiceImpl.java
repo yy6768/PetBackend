@@ -131,18 +131,20 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Map<String, String> getByIdCase(Integer cid) {
+    public Map<String, Object> getByIdCase(Integer cid) {
         Illcase illcase = caseMapper.selectById(cid);
-        Map<String,String> caseMap=new HashMap<>();
+        List<Illcase> illcaseList=new ArrayList<>();
+        illcaseList.add(illcase);
+        Map<String,Object> caseMap=new HashMap<>();
         if(illcase!=null){
             caseMap.put("error_message", "success");
         }
         else{
             caseMap.put("error_message", "get case by id fail");
         }
-        caseMap.put("illcase", String.valueOf(illcase));
+        caseMap.put("case_list", illcaseList);
 
-        return caseMap;
+        return new JSONObject(caseMap);
     }
 
     @Override
