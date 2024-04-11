@@ -12,5 +12,5 @@ public interface UserManageService {
 
     Map<String, String> editUser(int uid, String username, String password, int authority);
 
-    JSONObject getUserList(String key, int page, int pageSize);
+    JSONObject getUserList(String key, Integer authority, int page, int pageSize);
 }
