@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.petbackend.dto.IllcaseDTO;
-import com.example.petbackend.dto.QuestionDTO;
 import com.example.petbackend.mapper.*;
 import com.example.petbackend.pojo.*;
 import com.example.petbackend.service.illcase.CaseService;
@@ -16,13 +15,11 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
 
-import static com.example.petbackend.service.impl.illcase.GetCaseServiceImpl.getStringObjectMap;
 
 @Service
 public class CaseServiceImpl implements CaseService {
@@ -41,13 +38,13 @@ public class CaseServiceImpl implements CaseService {
     private CateMapper cateMapper;
 
     @Override
-    public Map<String, String> addCase(Integer uid, Integer ill_id, Date date,
+    public Map<String, String> addCase(String username, String ill_name, Date date,
                                        String basic_situation, String photo,
                                        String result, String therapy,
                                        String surgery_video) {
         Map<String,String> caseMap=new HashMap<>();
-        User user=userMapper.selectById(uid);
-        Ill ill= illMapper.selectById(ill_id);
+        User user=userMapper.selectByName(username).get(0);
+        Ill ill= illMapper.selectByName(ill_name).get(0);
         if(user==null||ill==null){
             caseMap.put("error_message", "未找到对应user或ill");
         }
@@ -56,7 +53,7 @@ public class CaseServiceImpl implements CaseService {
         }
         else{
             if(photo==null||photo.length()==0)photo="http://tecentapi.empty.image";
-            Illcase illcase = new Illcase(uid,ill_id,date,basic_situation,photo,result,
+            Illcase illcase = new Illcase(user.getUid(), ill.getIllId(), date,basic_situation,photo,result,
                     therapy,surgery_video);
             caseMapper.insert(illcase);
             caseMap.put("error_message", "success");
@@ -161,8 +158,7 @@ public class CaseServiceImpl implements CaseService {
         }
         labMap.put("lab_list", labList);
 
-        JSONObject obj = new JSONObject(labMap);
-        return obj;
+        return new JSONObject(labMap);
     }
 
     @Override
@@ -177,8 +173,7 @@ public class CaseServiceImpl implements CaseService {
         }
         medicineMap.put("medicine_list", medicineList);
 
-        JSONObject obj = new JSONObject(medicineMap);
-        return obj;
+        return new JSONObject(medicineMap);
     }
 
     @Override

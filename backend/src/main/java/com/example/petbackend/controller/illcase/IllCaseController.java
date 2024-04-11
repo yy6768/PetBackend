@@ -24,8 +24,8 @@ public class IllCaseController {
 
     @PostMapping("/case/add")
     public Map<String,String> addCase(@RequestParam Map<String,String> map) throws ParseException {
-        Integer uid= Integer.valueOf(map.get("uid"));
-        Integer ill_id= Integer.valueOf(map.get("ill_id"));
+        String username= map.get("username");
+        String ill_name= map.get("ill_name");
         //String转Date
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse(map.get("date"));
 
@@ -35,7 +35,7 @@ public class IllCaseController {
         String therapy=map.get("therapy");
         String surgery_video=map.get("surgery_video");
 
-        return caseService.addCase(uid,ill_id,date,basic_situation,photo,result,
+        return caseService.addCase(username,ill_name,date,basic_situation,photo,result,
                 therapy,surgery_video);
     }
 
