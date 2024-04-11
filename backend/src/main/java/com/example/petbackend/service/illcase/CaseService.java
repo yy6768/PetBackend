@@ -14,7 +14,7 @@ public interface CaseService {
 
     Map<String,Object> getAllCase(Integer page, Integer pageSize,String search);
 
-    Map<String, String> getByIdCase(Integer cid);
+    Map<String, Object> getByIdCase(Integer cid);
 
     Map<String, Object> getAllLab();
 
