@@ -38,10 +38,7 @@ public class CaseServiceImpl implements CaseService {
     private CateMapper cateMapper;
 
     @Override
-    public Map<String, String> addCase(String username, String ill_name, Date date,
-                                       String basic_situation, String photo,
-                                       String result, String therapy,
-                                       String surgery_video) {
+    public Map<String, String> addCase(String username, String ill_name, Date date) {
         Map<String,String> caseMap=new HashMap<>();
         User user=userMapper.selectByName(username).get(0);
         Ill ill= illMapper.selectByName(ill_name).get(0);
@@ -49,15 +46,7 @@ public class CaseServiceImpl implements CaseService {
             caseMap.put("error_message", "未找到对应user或ill");
         }
         else{
-            if(basic_situation==null){
-                basic_situation="暂无内容";
-            }
-            else if(basic_situation.length()>255){
-                caseMap.put("error_message", "basic_situation是长文本");
-            }
-            if(photo==null||photo.length()==0)photo="http://tecentapi.empty.image";
-            Illcase illcase = new Illcase(user.getUid(), ill.getIllId(), date,basic_situation,photo,result,
-                    therapy,surgery_video);
+            Illcase illcase = new Illcase(user.getUid(), ill.getIllId(), date);
             caseMapper.insert(illcase);
             caseMap.put("error_message", "success");
             caseMap.put("cid", String.valueOf(illcase.getCid()));
@@ -66,20 +55,27 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Map<String, String> updateCase(Integer cid,
-                                          String basic_situation, String result,
-                                          String therapy,String surgery_video) {
+    public Map<String, String> updateCase(Integer cid, String basic_situation, String photo,
+                                          String result, String therapy,String surgery_video) {
         Illcase illcase = caseMapper.selectById(cid);
         int res=0;
+        Map<String,String> caseMap=new HashMap<>();
         if(illcase!=null){
-            illcase.setCid(cid);
+            if(basic_situation==null){
+                basic_situation="暂无内容";
+            }
+            else if(basic_situation.length()>255){
+                caseMap.put("error_message", "basic_situation是长文本");
+                return caseMap;
+            }
+            if(photo==null||photo.length()==0)photo="http://tecentapi.empty.image";
             illcase.setBasicSituation(basic_situation);
+            illcase.setPhoto(photo);
             illcase.setResult(result);
             illcase.setTherapy(therapy);
             illcase.setSurgeryVideo(surgery_video);
             res=caseMapper.updateById(illcase);
         }
-        Map<String,String> caseMap=new HashMap<>();
         if(res < 1){
             caseMap.put("error_message", "update fail");
         }
