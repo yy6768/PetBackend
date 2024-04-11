@@ -29,8 +29,8 @@ public class GetCaseServiceImpl implements GetCaseService {
     @Autowired
     private CateMapper cateMapper;
     @Override
-    public Map<String, Object> getByCateCase(Integer page, Integer pageSize,Integer cate_id) {
-        List<Ill> illList = illMapper.selectByCate(cateMapper.selectById(cate_id).getCateName());
+    public Map<String, Object> getByCateCase(Integer page, Integer pageSize,String cate_name) {
+        List<Ill> illList = illMapper.selectByCate(cate_name);
         return getStringObjectMap(page, pageSize, illList);
     }
 
