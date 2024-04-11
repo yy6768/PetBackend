@@ -14,8 +14,5 @@ public class Medicine {
     private Integer medicineId;
     private String medicineName;
     private Double medicineCost;
-    public Medicine(String medicine_name, Double medicine_cost){
-        this.medicineName=medicine_name;
-        this.medicineCost=medicine_cost;
-    }
+    private String description;
 }

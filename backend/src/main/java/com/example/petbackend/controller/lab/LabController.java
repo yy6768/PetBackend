@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
@@ -18,15 +17,18 @@ public class LabController {
         String lab_name=map.get("lab_name");
         Double lab_cost= Double.valueOf(map.get("lab_cost"));
 
-        return labService.addLab(lab_name,lab_cost);
+        String description = map.get("description");
+
+        return labService.addLab(lab_name,lab_cost,description);
     }
 
     @PostMapping("/lab/update")
     public Map<String,String> updateLab(@RequestParam Map<String,String> map){
         Integer lab_id= Integer.valueOf(map.get("lab_id"));
         Double lab_cost= Double.valueOf(map.get("lab_cost"));
+        String description = map.get("description");
 
-        return labService.updateLab(lab_id,lab_cost);
+        return labService.updateLab(lab_id,lab_cost,description);
     }
 
     @DeleteMapping("/lab/delete")

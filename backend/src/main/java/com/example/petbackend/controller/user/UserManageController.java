@@ -36,10 +36,15 @@ public class UserManageController {
 
     @GetMapping("/user/getall")
     public JSONObject getUserList(@RequestParam Map<String, String> map){
-        String key = map.get("key");
+        String name = map.get("key");
+        if (name == null) name = "";
         int page = Integer.parseInt(map.get("page"));
         int pageSize = Integer.parseInt(map.get("pageSize"));
-        return userManageService.getUserList(key, page, pageSize);
+        int authority = -1;
+        String authority_string = map.get("authority");
+        if (authority_string != null)
+            authority = Integer.parseInt(authority_string);
+        return userManageService.getUserList(name, authority, page, pageSize);
     }
 
 
