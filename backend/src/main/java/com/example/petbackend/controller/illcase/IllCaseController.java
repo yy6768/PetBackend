@@ -29,25 +29,19 @@ public class IllCaseController {
         //String转Date
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse(map.get("date"));
 
-        String basic_situation=map.get("basic_situation");
-        String photo=map.get("photo");
-        String result=map.get("result");
-        String therapy=map.get("therapy");
-        String surgery_video=map.get("surgery_video");
-
-        return caseService.addCase(username,ill_name,date,basic_situation,photo,result,
-                therapy,surgery_video);
+        return caseService.addCase(username,ill_name,date);
     }
 
     @PostMapping("/case/update")
     public Map<String,String> updateCase(@RequestParam Map<String,String> map){
         Integer cid= Integer.valueOf(map.get("cid"));
         String basic_situation=map.get("basic_situation");
+        String photo=map.get("photo");
         String result=map.get("result");
         String therapy=map.get("therapy");
         String surgery_video=map.get("surgery_video");
 
-        return caseService.updateCase(cid,basic_situation,result,therapy,surgery_video);
+        return caseService.updateCase(cid,basic_situation,photo,result,therapy,surgery_video);
     }
 
     @DeleteMapping("/case/delete")

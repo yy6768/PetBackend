@@ -24,16 +24,9 @@ public class Illcase {
     private String therapy;
     private String surgeryVideo;
 
-    public Illcase(Integer uid, Integer ill_id, Date date,
-                   String basic_situation, String photo, String result,
-                   String therapy, String surgery_video){
+    public Illcase(Integer uid, Integer ill_id, Date date){
         this.uid=uid;
         this.illId=ill_id;
         this.date=date;
-        this.basicSituation=basic_situation;
-        this.photo=photo;
-        this.result=result;
-        this.therapy=therapy;
-        this.surgeryVideo=surgery_video;
     }
 }
