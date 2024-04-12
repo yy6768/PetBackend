@@ -216,10 +216,25 @@ public class GetQuestionsServiceImpl implements GetQuestionsService {
     //按照qid返回题目详情
     public Map<String, Object> getQuestionByQid(Integer qid) {
         Question question = questionMapper.selectById(qid);
+        QuestionDTO questionDTO = new QuestionDTO();
+        Cate cate = cateMapper.selectById(question.getCateId());
+        Ill ill = illMapper.selectById(question.getIllId());
+        questionDTO.setQid(question.getQid());
+        questionDTO.setCateId(question.getCateId());
+        questionDTO.setCateName(cate.getCateName());
+        questionDTO.setIllId(question.getIllId());
+        questionDTO.setIllName(ill.getIllName());
+        questionDTO.setDescription((question.getDescription()));
+        questionDTO.setMark(question.getMark());
+        questionDTO.setAnswer(question.getAnswer());
+        questionDTO.setContentA(question.getContentA());
+        questionDTO.setContentB(question.getContentB());
+        questionDTO.setContentC(question.getContentC());
+        questionDTO.setContentD(question.getContentD());
         Map<String, Object> questionMap = new HashMap<>();
         if (question != null) {
             questionMap.put("error_message", "success");
-            questionMap.put("question", question);
+            questionMap.put("question", questionDTO);
         } else {
             questionMap.put("error_message", "查看详情失败");
         }
