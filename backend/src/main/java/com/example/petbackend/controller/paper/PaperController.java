@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Map;
 
 @RestController
@@ -22,14 +22,14 @@ public class PaperController {
 
     //添加试卷
     @PostMapping("/paper/add")
-    public Map<String, String> addPaper(@RequestParam Map<String, Object> map) throws ParseException{
-        Integer uid = Integer.valueOf((String) map.get("uid"));
-        String paper_name = (String) map.get("paper_name");
-        Timestamp time = Timestamp.valueOf((String) map.get("time"));
-        Date date = (Date) new SimpleDateFormat("yyyy-MM-dd").parse((String) map.get("date"));
-
+    public Map<String, String> addPaper(@RequestParam Map<String, String> map) throws ParseException{
+        Integer uid = Integer.valueOf( map.get("uid"));
+        String paper_name =  map.get("paper_name");
+        Timestamp time = Timestamp.valueOf(map.get("time"));
+        //生成当前时间
+        Date date = new Date(System.currentTimeMillis());
         // 将题目列表字符串转换为数组
-        String questionListStr = (String) map.get("question_list");
+        String questionListStr = map.get("question_list");
         String[] questionListArray = questionListStr.split(",");
         Integer[] question_list = new Integer[questionListArray.length];
         for (int i = 0; i < questionListArray.length; i++) {
