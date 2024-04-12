@@ -141,16 +141,16 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Map<String, String> getByIdCase(Integer cid) {
+    public Map<String, Object> getByIdCase(Integer cid) {
         Illcase illcase = caseMapper.selectById(cid);
-        Map<String,String> caseMap=new HashMap<>();
+        Map<String,Object> caseMap=new HashMap<>();
         if(illcase!=null){
             caseMap.put("error_message", "success");
         }
         else{
             caseMap.put("error_message", "get case by id fail");
         }
-        caseMap.put("case", String.valueOf(illcase));
+        caseMap.put("case", illcase);
 
         return caseMap;
     }
@@ -210,7 +210,7 @@ public class CaseServiceImpl implements CaseService {
                 "    },\n" +
                 "    \"basic_situation\": {\n" +
                 "      \"type\": \"string\"\n" +
-                "    }\n" +
+                "    },\n" +
                 "    \"photo\": {\n" +
                 "      \"type\": \"string\"\n" +
                 "    },\n" +
@@ -226,8 +226,22 @@ public class CaseServiceImpl implements CaseService {
                 "  }\n" +
                 "}", XContentType.JSON);
 
-        CreateIndexResponse createIndexResponse = client.indices().create(createIndexRequest, RequestOptions.DEFAULT);
-        return createIndexResponse.isAcknowledged();
+        try {
+            CreateIndexResponse createIndexResponse = client.indices().create(createIndexRequest, RequestOptions.DEFAULT);
+            return createIndexResponse.isAcknowledged();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            // 不要忘记关闭client连接
+            try {
+                client.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+//        CreateIndexResponse createIndexResponse = client.indices().create(createIndexRequest, RequestOptions.DEFAULT);
+//        return createIndexResponse.isAcknowledged();
 
     }
 }
