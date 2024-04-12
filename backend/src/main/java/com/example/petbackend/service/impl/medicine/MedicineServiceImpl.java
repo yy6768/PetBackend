@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.petbackend.mapper.CaseMapper;
+import com.example.petbackend.mapper.CaseMedicineMapper;
 import com.example.petbackend.mapper.MedicineMapper;
+import com.example.petbackend.pojo.CaseMedicine;
 import com.example.petbackend.pojo.Medicine;
 import com.example.petbackend.service.medicine.MedicineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,8 @@ public class MedicineServiceImpl implements MedicineService {
 
     @Autowired
     MedicineMapper medicineMapper;
+    @Autowired
+    private CaseMedicineMapper caseMedicineMapper;
 
     //添加药品
     @Override
@@ -55,10 +60,16 @@ public class MedicineServiceImpl implements MedicineService {
     //删除药品
     @Override
     public Map<String, String> deleteMedicine(Integer medicine_id){
-        int result = medicineMapper.deleteById(medicine_id);
+        QueryWrapper<CaseMedicine> queryWrapper=new QueryWrapper<CaseMedicine>();
+        caseMedicineMapper.delete(queryWrapper.lambda().eq(CaseMedicine::getCid,medicine_id));
+
+        QueryWrapper<Medicine> queryWrapper1=new QueryWrapper<Medicine>();
+
+        int result=medicineMapper.delete(queryWrapper1.lambda().eq(Medicine::getMedicineId ,medicine_id));
+
         Map<String,String> medicineMap=new HashMap<>();
         if(result < 1){
-            medicineMap.put("error_message", "deletefail");
+            medicineMap.put("error_message", "delete fail");
         }
         else{
             medicineMap.put("error_message", "success");
