@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.petbackend.dto.IllcaseDTO;
 import com.example.petbackend.mapper.*;
 import com.example.petbackend.pojo.*;
 import com.example.petbackend.service.illcase.CaseService;
@@ -14,16 +15,11 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static com.example.petbackend.service.impl.illcase.GetCaseServiceImpl.getStringObjectMap;
 
 @Service
 public class CaseServiceImpl implements CaseService {
@@ -38,25 +34,19 @@ public class CaseServiceImpl implements CaseService {
     private UserMapper userMapper;
     @Autowired
     private IllMapper illMapper;
+    @Autowired
+    private CateMapper cateMapper;
 
     @Override
-    public Map<String, String> addCase(Integer uid, Integer ill_id, Date date,
-                                       String basic_situation, String photo,
-                                       String result, String therapy,
-                                       String surgery_video) {
+    public Map<String, String> addCase(String username, String ill_name, Date date) {
         Map<String,String> caseMap=new HashMap<>();
-        User user=userMapper.selectById(uid);
-        Ill ill= illMapper.selectById(ill_id);
+        User user=userMapper.selectByName(username).get(0);
+        Ill ill= illMapper.selectByName(ill_name).get(0);
         if(user==null||ill==null){
             caseMap.put("error_message", "未找到对应user或ill");
         }
-        else if(basic_situation.length()>255){
-            caseMap.put("error_message", "basic_situation是长文本");
-        }
         else{
-            if(photo==null||photo.length()==0)photo="http://tecentapi.empty.image";
-            Illcase illcase = new Illcase(uid,ill_id,date,basic_situation,photo,result,
-                    therapy,surgery_video);
+            Illcase illcase = new Illcase(user.getUid(), ill.getIllId(), date);
             caseMapper.insert(illcase);
             caseMap.put("error_message", "success");
             caseMap.put("cid", String.valueOf(illcase.getCid()));
@@ -65,20 +55,27 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Map<String, String> updateCase(Integer cid, Integer ill_id,
-                                          String basic_situation, String result,
-                                          String therapy) {
+    public Map<String, String> updateCase(Integer cid, String basic_situation, String photo,
+                                          String result, String therapy,String surgery_video) {
         Illcase illcase = caseMapper.selectById(cid);
         int res=0;
+        Map<String,String> caseMap=new HashMap<>();
         if(illcase!=null){
-            illcase.setCid(cid);
-            illcase.setIllId(ill_id);
+            if(basic_situation==null){
+                basic_situation="暂无内容";
+            }
+            else if(basic_situation.length()>255){
+                caseMap.put("error_message", "basic_situation是长文本");
+                return caseMap;
+            }
+            if(photo==null||photo.length()==0)photo="http://tecentapi.empty.image";
             illcase.setBasicSituation(basic_situation);
+            illcase.setPhoto(photo);
             illcase.setResult(result);
             illcase.setTherapy(therapy);
+            illcase.setSurgeryVideo(surgery_video);
             res=caseMapper.updateById(illcase);
         }
-        Map<String,String> caseMap=new HashMap<>();
         if(res < 1){
             caseMap.put("error_message", "update fail");
         }
@@ -107,33 +104,47 @@ public class CaseServiceImpl implements CaseService {
         caseQueryWrapper.like("basic_situation", search);
         casePage = caseMapper.selectPage(casePage, caseQueryWrapper);
         Map<String, Object> caseMap = new HashMap<>();
-        List<Illcase> illcaseList =casePage.getRecords();
-        if(illcaseList !=null && !illcaseList.isEmpty()) {
+        List<Illcase> illcaseList=casePage.getRecords();
+        List<IllcaseDTO> illcaseDTOList =new ArrayList<>();
+        for(Illcase illcase: illcaseList){
+            Ill ill = illMapper.selectById(illcase.getIllId());
+            Cate cate = cateMapper.selectById(ill.getCateId());
+            User user=userMapper.selectById(illcase.getUid());
+            IllcaseDTO illcaseDTO = new IllcaseDTO();
+            illcaseDTO.setCid(illcase.getCid());
+            illcaseDTO.setDate(illcase.getDate());
+            illcaseDTO.setCate_name(cate.getCateName());
+            illcaseDTO.setUsername(user.getUsername());
+            illcaseDTO.setIll_name(ill.getIllName());
+            illcaseDTOList.add(illcaseDTO);
+        }
+        if(!illcaseDTOList.isEmpty()) {
             caseMap.put("error_message", "success");
-            caseMap.put("case_list", illcaseList);
+            caseMap.put("case_list", illcaseDTOList);
             caseMap.put("total", caseMapper.selectCount(caseQueryWrapper));
         } else{
             caseMap.put("error_message", "未找到对应case");
         }
 
-        JSONObject obj = new JSONObject(caseMap);
-        return obj;
+        return new JSONObject(caseMap);
 
     }
 
     @Override
-    public Map<String, String> getByIdCase(Integer cid) {
+    public Map<String, Object> getByIdCase(Integer cid) {
         Illcase illcase = caseMapper.selectById(cid);
-        Map<String,String> caseMap=new HashMap<>();
+        List<Illcase> illcaseList=new ArrayList<>();
+        illcaseList.add(illcase);
+        Map<String,Object> caseMap=new HashMap<>();
         if(illcase!=null){
             caseMap.put("error_message", "success");
         }
         else{
             caseMap.put("error_message", "get case by id fail");
         }
-        caseMap.put("illcase", String.valueOf(illcase));
+        caseMap.put("case_list", illcaseList);
 
-        return caseMap;
+        return new JSONObject(caseMap);
     }
 
     @Override
@@ -148,8 +159,7 @@ public class CaseServiceImpl implements CaseService {
         }
         labMap.put("lab_list", labList);
 
-        JSONObject obj = new JSONObject(labMap);
-        return obj;
+        return new JSONObject(labMap);
     }
 
     @Override
@@ -164,8 +174,7 @@ public class CaseServiceImpl implements CaseService {
         }
         medicineMap.put("medicine_list", medicineList);
 
-        JSONObject obj = new JSONObject(medicineMap);
-        return obj;
+        return new JSONObject(medicineMap);
     }
 
     @Override

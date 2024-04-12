@@ -22,8 +22,8 @@ public class MedicineServiceImpl implements MedicineService {
 
     //添加药品
     @Override
-    public Map<String, String> addMedicine(String medicine_name, Double medicine_cost){
-        Medicine medicine = new Medicine(medicine_name, medicine_cost);
+    public Map<String, String> addMedicine(String medicine_name, Double medicine_cost, String description){
+        Medicine medicine = new Medicine(null, medicine_name, medicine_cost, description);
         medicineMapper.insert(medicine);
         Map<String,String> medicineMap=new HashMap<>();
         medicineMap.put("error_message", "success");
@@ -33,11 +33,12 @@ public class MedicineServiceImpl implements MedicineService {
 
     //修改药品费用
     @Override
-    public Map<String, String> updateMedicine(Integer medicine_id, Double medicine_cost) {
+    public Map<String, String> updateMedicine(Integer medicine_id, Double medicine_cost, String description) {
         Medicine medicine = medicineMapper.selectById(medicine_id);
         int res = 0;
         if (medicine != null) {
             medicine.setMedicineCost(medicine_cost);
+            medicine.setDescription(description);
             res = medicineMapper.updateById(medicine);
         }
         Map<String, String> medicineMap = new HashMap<>();
@@ -83,8 +84,7 @@ public class MedicineServiceImpl implements MedicineService {
         } else{
             medicineMap.put("error_message", "未找到对应药品");
         }
-        JSONObject obj = new JSONObject(medicineMap);
-        return obj;
+        return new JSONObject(medicineMap);
     }
 
 

@@ -114,12 +114,15 @@ public class UserManageServiceImpl implements UserManageService {
     }
 
     @Override
-    public JSONObject getUserList(String key, int page, int pageSize)   {
+    public JSONObject getUserList(String name, Integer authority, int page, int pageSize)   {
         IPage <User> userIPage = new Page<>(page, pageSize);
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        key = key.trim();
-        if (!key.isEmpty()) {
-            userQueryWrapper.like("username", key);
+        name = name.trim();
+        if (!name.isEmpty()) {
+            userQueryWrapper.like("username", name);
+        }
+        if (authority != -1) {
+            userQueryWrapper.eq("authority", authority);
         }
         userIPage = userMapper.selectPage(userIPage, userQueryWrapper);
         List<User> users = userIPage.getRecords();

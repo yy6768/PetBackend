@@ -1,7 +1,6 @@
 package com.example.petbackend.controller.medicine;
 
 import com.example.petbackend.service.medicine.MedicineService;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +22,8 @@ public class MedicineController {
     public Map<String, String> addMedicine(@RequestParam Map<String, String> map){
         String medicine_name = map.get("medicine_name");
         Double medicine_cost= Double.valueOf(map.get("medicine_cost"));
-        return medicineService.addMedicine(medicine_name, medicine_cost);
+        String description = map.get("description");
+        return medicineService.addMedicine(medicine_name, medicine_cost, description);
     }
 
     /**
@@ -35,7 +35,8 @@ public class MedicineController {
     public Map<String, String> updateMedicine(@RequestParam Map<String, String> map){
         Integer medicine_id = Integer.valueOf(map.get("medicine_id"));
         Double medicine_cost = Double.valueOf(map.get("medicine_cost"));
-        return medicineService.updateMedicine(medicine_id, medicine_cost);
+        String description = map.get("description");
+        return medicineService.updateMedicine(medicine_id, medicine_cost, description);
     }
 
     /**
@@ -58,7 +59,7 @@ public class MedicineController {
     public Map<String, Object> getAllMedicine(@RequestParam Map<String, String> map){
         Integer page = Integer.valueOf(map.get("page"));
         Integer pageSize = Integer.valueOf(map.get("pageSize"));
-        String key = map.containsKey("key") ? map.get("key") : null;
+        String key = map.getOrDefault("key", null);
         return medicineService.getAllMedicine(page, pageSize, key);
     }
 

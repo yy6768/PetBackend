@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
 
@@ -24,30 +26,25 @@ public class IllCaseController {
 
     @PostMapping("/case/add")
     public Map<String,String> addCase(@RequestParam Map<String,String> map) throws ParseException {
-        Integer uid= Integer.valueOf(map.get("uid"));
-        Integer ill_id= Integer.valueOf(map.get("ill_id"));
+        String username= map.get("username");
+        String ill_name= map.get("ill_name");
         //String转Date
-        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(map.get("date"));
+        LocalDateTime localDateTime=LocalDateTime.now();
+        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
+        return caseService.addCase(username,ill_name,date);
+    }
+
+    @PostMapping("/case/update")
+    public Map<String,String> updateCase(@RequestParam Map<String,String> map){
+        Integer cid= Integer.valueOf(map.get("cid"));
         String basic_situation=map.get("basic_situation");
         String photo=map.get("photo");
         String result=map.get("result");
         String therapy=map.get("therapy");
         String surgery_video=map.get("surgery_video");
 
-        return caseService.addCase(uid,ill_id,date,basic_situation,photo,result,
-                therapy,surgery_video);
-    }
-
-    @PostMapping("/case/update")
-    public Map<String,String> updateCase(@RequestParam Map<String,String> map){
-        Integer cid= Integer.valueOf(map.get("cid"));
-        Integer ill_id= Integer.valueOf(map.get("ill_id"));
-        String basic_situation=map.get("basic_situation");
-        String result=map.get("result");
-        String therapy=map.get("therapy");
-
-        return caseService.updateCase(cid,ill_id,basic_situation,result,therapy);
+        return caseService.updateCase(cid,basic_situation,photo,result,therapy,surgery_video);
     }
 
     @DeleteMapping("/case/delete")
@@ -66,7 +63,7 @@ public class IllCaseController {
     }
 
     @GetMapping("/case/get_by_id")
-    public Map<String,String> getByIdCase(@RequestParam Map<String,String> map){
+    public Map<String,Object> getByIdCase(@RequestParam Map<String,String> map){
         Integer cid=Integer.valueOf(map.get("cid"));
 
         return caseService.getByIdCase(cid);
@@ -76,7 +73,7 @@ public class IllCaseController {
     public Map<String,Object> getByCateCase(@RequestParam Map<String,String> map){
         Integer page = Integer.valueOf(map.get("page"));
         Integer pageSize = Integer.valueOf(map.get("pageSize"));
-        String cate_name=map.get("cate_name");
+        String cate_name= map.get("cate_name");
 
         return getCaseService.getByCateCase(page, pageSize,cate_name);
     }
