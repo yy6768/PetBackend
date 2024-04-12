@@ -3,14 +3,17 @@ package com.example.petbackend.service.impl.illcase;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.petbackend.dto.IllcaseDTO;
 import com.example.petbackend.mapper.*;
 import com.example.petbackend.pojo.*;
 import com.example.petbackend.service.illcase.CaseService;
+import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -99,11 +102,18 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Map<String, Object> getAllCase(Integer page, Integer pageSize,String search) {
+//        List<Illcase> illcases = caseMapper.selectBySearch(search);
+//        List<Integer> illCaseIdList = new ArrayList<>();
+//        for (Illcase illcase : illcases) {
+//            illCaseIdList.add(illcase.getCid());
+//        }
         IPage<Illcase> casePage = new Page<>(page, pageSize);
         QueryWrapper<Illcase> caseQueryWrapper = new QueryWrapper<>();
         caseQueryWrapper.like("basic_situation", search);
         casePage = caseMapper.selectPage(casePage, caseQueryWrapper);
         Map<String, Object> caseMap = new HashMap<>();
+//        casePage = caseMapper.selectPage(casePage, Wrappers.<Illcase>lambdaQuery()
+//                .in(Illcase::getCid, illCaseIdList));
         List<Illcase> illcaseList=casePage.getRecords();
         List<IllcaseDTO> illcaseDTOList =new ArrayList<>();
         for(Illcase illcase: illcaseList){
@@ -131,20 +141,18 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Map<String, Object> getByIdCase(Integer cid) {
+    public Map<String, String> getByIdCase(Integer cid) {
         Illcase illcase = caseMapper.selectById(cid);
-        List<Illcase> illcaseList=new ArrayList<>();
-        illcaseList.add(illcase);
-        Map<String,Object> caseMap=new HashMap<>();
+        Map<String,String> caseMap=new HashMap<>();
         if(illcase!=null){
             caseMap.put("error_message", "success");
         }
         else{
             caseMap.put("error_message", "get case by id fail");
         }
-        caseMap.put("case_list", illcaseList);
+        caseMap.put("case", String.valueOf(illcase));
 
-        return new JSONObject(caseMap);
+        return caseMap;
     }
 
     @Override
@@ -179,6 +187,8 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public boolean createIllcaseIndex(String index) throws IOException {
+        RestHighLevelClient client = new RestHighLevelClient(
+                RestClient.builder(new HttpHost("localhost", 9200, "http")));
         CreateIndexRequest createIndexRequest = new CreateIndexRequest(index);
         createIndexRequest.settings(Settings.builder()
                 .put("index.number_of_shards", 1)
@@ -215,8 +225,9 @@ public class CaseServiceImpl implements CaseService {
                 "    },\n" +
                 "  }\n" +
                 "}", XContentType.JSON);
-        RestHighLevelClient client = null;
+
         CreateIndexResponse createIndexResponse = client.indices().create(createIndexRequest, RequestOptions.DEFAULT);
         return createIndexResponse.isAcknowledged();
+
     }
 }

@@ -63,7 +63,7 @@ public class IllCaseController {
     }
 
     @GetMapping("/case/get_by_id")
-    public Map<String,Object> getByIdCase(@RequestParam Map<String,String> map){
+    public Map<String,String> getByIdCase(@RequestParam Map<String,String> map){
         Integer cid=Integer.valueOf(map.get("cid"));
 
         return caseService.getByIdCase(cid);
