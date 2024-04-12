@@ -39,7 +39,7 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/updateQuestion")
-    public Map<String, String> updateQuestion(@RequestParam Map<String, String> map){
+    public Map<String, Object> updateQuestion(@RequestParam Map<String, String> map){
         Integer qid = Integer.valueOf(map.get("qid"));
         Integer cate_id = Integer.valueOf(map.get("cate_id"));
         Integer ill_id = Integer.valueOf(map.get("ill_id"));
