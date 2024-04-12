@@ -42,10 +42,10 @@ public class PaperServiceImpl implements PaperService {
     //删除试卷
     @Override
     public Map<String, String> deletePaper(Integer paper_id){
-        int res = paperMapper.deleteById(paper_id);
         QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
         paperQuestionQueryWrapper.eq("paper_id", paper_id);
         paperQuestionMapper.delete(paperQuestionQueryWrapper);
+        int res = paperMapper.deleteById(paper_id);
         Map<String, String> paperMap = new HashMap<>();
         if(res<1){
             paperMap.put("error_message", "delete fail");
@@ -73,12 +73,9 @@ public class PaperServiceImpl implements PaperService {
             QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
             paperQuestionQueryWrapper.eq("paper_id", paper_id);
             paperQuestionMapper.delete(paperQuestionQueryWrapper);
-            //把新的list加进去
-            for (Integer qid : question_list) {
-                QueryWrapper<PaperQuestion> Wrapper = new QueryWrapper<>();
-                Wrapper.eq("paper_id", paper_id);
-                Integer currentNum = paperQuestionMapper.selectCount(Wrapper); // 查询当前记录数量
-                PaperQuestion paperQuestion = new PaperQuestion(paper_id, qid, currentNum+1);
+            // 把新的题目列表插进去
+            for (int i = 0; i < question_list.length; i++) {
+                PaperQuestion paperQuestion = new PaperQuestion(paper_id, question_list[i], i + 1);
                 paperQuestionMapper.insert(paperQuestion);
             }
             paperMap.put("error_message", "success");
