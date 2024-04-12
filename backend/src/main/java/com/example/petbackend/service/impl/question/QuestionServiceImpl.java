@@ -57,7 +57,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     //修改题目
     @Override
-    public Map<String, String> updateQuestion(Integer qid, Integer cate_id, Integer ill_id, String description,
+    public Map<String, Object> updateQuestion(Integer qid, Integer cate_id, Integer ill_id, String description,
                                               Integer answer, Integer mark, String content_a,
                                               String content_b, String content_c, String content_d){
         Question question = questionMapper.selectById(qid);
@@ -74,11 +74,27 @@ public class QuestionServiceImpl implements QuestionService {
             question.setContentD(content_d);
             res = questionMapper.updateById(question);
         }
-        Map<String, String> questionMap = new HashMap<>();
+        QuestionDTO questionDTO = new QuestionDTO();
+        Cate cate = cateMapper.selectById(question.getCateId());
+        Ill ill = illMapper.selectById(question.getIllId());
+        questionDTO.setQid(question.getQid());
+        questionDTO.setCateId(question.getCateId());
+        questionDTO.setCateName(cate.getCateName());
+        questionDTO.setIllId(question.getIllId());
+        questionDTO.setIllName(ill.getIllName());
+        questionDTO.setDescription((question.getDescription()));
+        questionDTO.setMark(question.getMark());
+        questionDTO.setAnswer(question.getAnswer());
+        questionDTO.setContentA(question.getContentA());
+        questionDTO.setContentB(question.getContentB());
+        questionDTO.setContentC(question.getContentC());
+        questionDTO.setContentD(question.getContentD());
+        Map<String, Object> questionMap = new HashMap<>();
         if(res < 1){
             questionMap.put("error_message", "update fail");
         } else{
             questionMap.put("error_message", "success");
+            questionMap.put("question", questionDTO);
         }
         return questionMap;
     }
