@@ -35,5 +35,5 @@ public interface CaseMapper extends BaseMapper<Illcase> {
     @Select("select * from illcase order by date")
     List<Illcase> sortByDate();
 
-
+    List<Illcase> selectBySearch(String search);
 }

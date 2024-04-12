@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.petbackend.mapper.CaseMapper">
+    <select id="selectBySearch" resultType="com.example.petbackend.pojo.Illcase">
+        select * from illcase
+        <where>
+            <if test="search!=null">
+                cid like concat ('%',#{search},'%')
+                or uid in (select uid from user where username like concat ('%',#{search},'%'))
+                or ill_id in (select ill_id from ill where ill_name like concat ('%',#{search},'%'))
+                or basic_situation like concat ('%',#{search},'%')
+                or result like concat ('%',#{search},'%')
+                or therapy like concat ('%',#{search},'%')
+            </if>
+        </where>
+    </select>
+
+</mapper>
