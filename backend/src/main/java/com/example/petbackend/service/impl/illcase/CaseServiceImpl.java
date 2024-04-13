@@ -3,7 +3,6 @@ package com.example.petbackend.service.impl.illcase;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.petbackend.dto.IllcaseDTO;
 import com.example.petbackend.mapper.*;
@@ -40,6 +39,8 @@ public class CaseServiceImpl implements CaseService {
     private IllMapper illMapper;
     @Autowired
     private CateMapper cateMapper;
+    @Autowired
+    private CaseMedicineMapper caseMedicineMapper;
 
     @Override
     public Map<String, String> addCase(String username, String ill_name, LocalDateTime date,
@@ -93,8 +94,10 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Map<String, String> deleteCase(Integer cid) {
+        int res= caseMedicineMapper.deleteByCaseId(cid);
+        int result=caseMapper.deleteById(cid);
         Map<String,String> caseMap=new HashMap<>();
-        if(caseMapper.deleteById(cid) < 1){
+        if(res < 1||result<1){
             caseMap.put("error_message", "delete fail");
         }
         else{

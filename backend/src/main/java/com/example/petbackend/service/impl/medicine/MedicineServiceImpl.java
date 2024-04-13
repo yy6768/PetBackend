@@ -61,10 +61,11 @@ public class MedicineServiceImpl implements MedicineService {
     @Override
     public Map<String, String> deleteMedicine(Integer medicine_id){
 
-        int result=medicineMapper.deleteCaseMedById(medicine_id);
+        int res= caseMedicineMapper.deleteByMedId(medicine_id);
+        int result=medicineMapper.deleteById(medicine_id);
 
         Map<String,String> medicineMap=new HashMap<>();
-        if(result < 1){
+        if(result < 1||res<1){
             medicineMap.put("error_message", "delete fail");
         }
         else{
