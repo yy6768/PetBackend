@@ -3,6 +3,7 @@ package com.example.petbackend.service.impl.illcase;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.petbackend.dto.IllcaseDTO;
 import com.example.petbackend.mapper.*;
@@ -111,18 +112,16 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Map<String, Object> getAllCase(Integer page, Integer pageSize,String search) {
-//        List<Illcase> illcases = caseMapper.selectBySearch(search);
-//        List<Integer> illCaseIdList = new ArrayList<>();
-//        for (Illcase illcase : illcases) {
-//            illCaseIdList.add(illcase.getCid());
-//        }
+        List<Illcase> illcases = caseMapper.selectBySearch(search);
+        List<Integer> illCaseIdList = new ArrayList<>();
+        for (Illcase illcase : illcases) {
+            illCaseIdList.add(illcase.getCid());
+        }
         IPage<Illcase> casePage = new Page<>(page, pageSize);
         QueryWrapper<Illcase> caseQueryWrapper = new QueryWrapper<>();
-        caseQueryWrapper.like("basic_situation", search);
-        casePage = caseMapper.selectPage(casePage, caseQueryWrapper);
         Map<String, Object> caseMap = new HashMap<>();
-//        casePage = caseMapper.selectPage(casePage, Wrappers.<Illcase>lambdaQuery()
-//                .in(Illcase::getCid, illCaseIdList));
+        casePage = caseMapper.selectPage(casePage, Wrappers.<Illcase>lambdaQuery()
+                .in(Illcase::getCid, illCaseIdList));
         List<Illcase> illcaseList=casePage.getRecords();
         List<IllcaseDTO> illcaseDTOList =new ArrayList<>();
         for(Illcase illcase: illcaseList){
