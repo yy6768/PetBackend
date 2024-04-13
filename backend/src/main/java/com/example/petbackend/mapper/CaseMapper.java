@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.Date;
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Mapper
 public interface CaseMapper extends BaseMapper<Illcase> {
@@ -20,11 +21,11 @@ public interface CaseMapper extends BaseMapper<Illcase> {
     @Select("select * from illcase where ill_id in (select ill_id from ill where ill_name=#{illName})")
     List<Illcase> selectByIll(String illName);
 
-//    @Select("select * from illcase where date=#{date}")
-//    List<Illcase> selectByDate(Date date);
+    @Select("select * from illcase where date=#{date}")
+    List<Illcase> selectByDate(LocalDateTime date);
 
-    @Select("select * from illcase where date like concat ('%',#{date},'%')")
-    List<Illcase> selectByDate(Date date);
+//    @Select("select * from illcase where date like concat ('%',#{date},'%')")
+//    List<Illcase> selectByDate(DateTime date);
 
     @Select("select * from illcase order by cid")
     List<Illcase> sortById();
@@ -36,4 +37,8 @@ public interface CaseMapper extends BaseMapper<Illcase> {
     List<Illcase> sortByDate();
 
     List<Illcase> selectBySearch(String search);
+
+    @Select("select * from illcase where date>=#{start} and date<=#{end}")
+    List<Illcase> selectRangeByDate(LocalDateTime start, LocalDateTime end);
+
 }
