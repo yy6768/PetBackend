@@ -22,7 +22,7 @@ public class PaperController {
 
     //添加试卷
     @PostMapping("/paper/add")
-    public Map<String, String> addPaper(@RequestParam Map<String, String> map) throws ParseException{
+    public Map<String, String> addPaper(@RequestParam Map<String, String> map){
         Integer uid = Integer.valueOf( map.get("uid"));
         String paper_name =  map.get("paper_name");
         Timestamp time = Timestamp.valueOf(map.get("time"));

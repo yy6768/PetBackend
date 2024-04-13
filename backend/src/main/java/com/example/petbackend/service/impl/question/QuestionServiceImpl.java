@@ -1,11 +1,14 @@
 package com.example.petbackend.service.impl.question;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.petbackend.dto.QuestionDTO;
 import com.example.petbackend.mapper.CateMapper;
 import com.example.petbackend.mapper.IllMapper;
+import com.example.petbackend.mapper.PaperQuestionMapper;
 import com.example.petbackend.mapper.QuestionMapper;
 import com.example.petbackend.pojo.Cate;
 import com.example.petbackend.pojo.Ill;
+import com.example.petbackend.pojo.PaperQuestion;
 import com.example.petbackend.pojo.Question;
 import com.example.petbackend.service.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,8 @@ public class QuestionServiceImpl implements QuestionService {
     CateMapper cateMapper;
     @Autowired
     IllMapper illMapper;
+    @Autowired
+    PaperQuestionMapper paperQuestionMapper;
 
     //添加题目
     @Override
@@ -99,10 +104,16 @@ public class QuestionServiceImpl implements QuestionService {
         return questionMap;
     }
 
-    //删除题目
+    //删除题目，级联删除，要删除paper_question中的相关记录
     @Override
     public Map<String, String> deleteQuestion(Integer qid){
+        //级联
+        QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
+        paperQuestionQueryWrapper.eq("qid", qid);
+        paperQuestionMapper.delete(paperQuestionQueryWrapper);
+
         int res = questionMapper.deleteById(qid);
+
         Map<String, String> questionMap = new HashMap<>();
         if(res < 1){
             questionMap.put("error_message", "delete fail");
