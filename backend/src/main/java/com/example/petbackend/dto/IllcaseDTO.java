@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+
 
 @Data
 @NoArgsConstructor
@@ -14,5 +15,5 @@ public class IllcaseDTO {
     private String cate_name;
     private String ill_name;
     private String username;
-    private Date date;
+    private LocalDateTime date;
 }

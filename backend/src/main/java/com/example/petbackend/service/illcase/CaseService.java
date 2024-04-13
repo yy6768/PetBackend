@@ -1,11 +1,13 @@
 package com.example.petbackend.service.illcase;
 
+
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 public interface CaseService {
-    Map<String,String> addCase(String username, String ill_name, Date date);
+    Map<String,String> addCase(String username, String ill_name, LocalDateTime date, String basic_situation, String photo,
+                               String result, String therapy, String surgery_video);
 
     Map<String,String> updateCase(Integer cid, String basic_situation,String photo,
                                   String result, String therapy,String surgery_video);

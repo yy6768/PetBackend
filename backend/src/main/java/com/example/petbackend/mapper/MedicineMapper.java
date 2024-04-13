@@ -16,5 +16,7 @@ public interface MedicineMapper extends BaseMapper<Medicine> {
 //    @Sql("DELETE FROM user_detail WHERE user_id = #{id}; DELETE FROM user WHERE id = #{id};")
 //    int deleteCaseMedById(@Param("id") Long id);
 
+    int deleteCaseMedById(Integer id);
+
 }
 
