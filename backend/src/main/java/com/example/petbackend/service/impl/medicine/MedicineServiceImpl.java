@@ -60,12 +60,8 @@ public class MedicineServiceImpl implements MedicineService {
     //删除药品
     @Override
     public Map<String, String> deleteMedicine(Integer medicine_id){
-        QueryWrapper<CaseMedicine> queryWrapper=new QueryWrapper<CaseMedicine>();
-        caseMedicineMapper.delete(queryWrapper.lambda().eq(CaseMedicine::getCid,medicine_id));
 
-        QueryWrapper<Medicine> queryWrapper1=new QueryWrapper<Medicine>();
-
-        int result=medicineMapper.delete(queryWrapper1.lambda().eq(Medicine::getMedicineId ,medicine_id));
+        int result=medicineMapper.deleteCaseMedById(medicine_id);
 
         Map<String,String> medicineMap=new HashMap<>();
         if(result < 1){

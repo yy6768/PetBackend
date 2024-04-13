@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
 
@@ -25,14 +24,17 @@ public class IllCaseController {
     private SortCaseService sortCaseService;
 
     @PostMapping("/case/add")
-    public Map<String,String> addCase(@RequestParam Map<String,String> map) throws ParseException {
+    public Map<String,String> addCase(@RequestParam Map<String,String> map) {
         String username= map.get("username");
         String ill_name= map.get("ill_name");
-        //String转Date
-        LocalDateTime localDateTime=LocalDateTime.now();
-        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        LocalDateTime date= LocalDateTime.now();
+        String basic_situation=map.get("basic_situation");
+        String photo=map.get("photo");
+        String result=map.get("result");
+        String therapy=map.get("therapy");
+        String surgery_video=map.get("surgery_video");
 
-        return caseService.addCase(username,ill_name,date);
+        return caseService.addCase(username,ill_name,date,basic_situation,photo,result,therapy,surgery_video);
     }
 
     @PostMapping("/case/update")

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -41,7 +42,9 @@ public class CaseServiceImpl implements CaseService {
     private CateMapper cateMapper;
 
     @Override
-    public Map<String, String> addCase(String username, String ill_name, Date date) {
+    public Map<String, String> addCase(String username, String ill_name, LocalDateTime date,
+                                       String basic_situation,String photo,
+                                       String result, String therapy,String surgery_video) {
         Map<String,String> caseMap=new HashMap<>();
         User user=userMapper.selectByName(username).get(0);
         Ill ill= illMapper.selectByName(ill_name).get(0);
@@ -49,7 +52,7 @@ public class CaseServiceImpl implements CaseService {
             caseMap.put("error_message", "未找到对应user或ill");
         }
         else{
-            Illcase illcase = new Illcase(user.getUid(), ill.getIllId(), date);
+            Illcase illcase = new Illcase(user.getUid(), ill.getIllId(), date,basic_situation,photo,result,therapy,surgery_video);
             caseMapper.insert(illcase);
             caseMap.put("error_message", "success");
             caseMap.put("cid", String.valueOf(illcase.getCid()));
