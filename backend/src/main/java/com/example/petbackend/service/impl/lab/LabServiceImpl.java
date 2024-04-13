@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.petbackend.mapper.CaseLabMapper;
 import com.example.petbackend.mapper.LabMapper;
 import com.example.petbackend.pojo.Lab;
 import com.example.petbackend.service.lab.LabService;
@@ -19,6 +20,8 @@ public class LabServiceImpl implements LabService {
 
     @Autowired
     private LabMapper labMapper;
+    @Autowired
+    private CaseLabMapper caseLabMapper;
 
     @Override
     public Map<String, String> addLab(String lab_name, Double lab_cost, String description) {
@@ -51,8 +54,11 @@ public class LabServiceImpl implements LabService {
 
     @Override
     public Map<String, String> deleteLab(Integer lab_id) {
+        int clres= caseLabMapper.deleteByLabId(lab_id);
+        int result=labMapper.deleteById(lab_id);
+
         Map<String,String> labMap=new HashMap<>();
-        if(labMapper.deleteById(lab_id) < 1){
+        if(result < 1||clres<1){
             labMap.put("error_message", "delete fail");
         }
         else{
