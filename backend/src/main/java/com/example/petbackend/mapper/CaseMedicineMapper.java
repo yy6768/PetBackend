@@ -9,4 +9,10 @@ import org.apache.ibatis.annotations.Mapper;
 public interface CaseMedicineMapper extends BaseMapper<CaseMedicine> {
     @Delete("delete from case_medicine where cid=#{cid} and medicine_id=#{medicineId}")
     int deleteById(Integer cid, Integer medicineId);
+
+    @Delete("delete from case_medicine where medicine_id=#{medicineId}")
+    int deleteByMedId(Integer medicineId);
+
+    @Delete("delete from case_medicine where cid=#{cid}")
+    int deleteByCaseId(Integer cid);
 }
