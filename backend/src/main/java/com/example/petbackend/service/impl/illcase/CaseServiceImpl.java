@@ -41,6 +41,8 @@ public class CaseServiceImpl implements CaseService {
     private CateMapper cateMapper;
     @Autowired
     private CaseMedicineMapper caseMedicineMapper;
+    @Autowired
+    private CaseLabMapper caseLabMapper;
 
     @Override
     public Map<String, String> addCase(String username, String ill_name, LocalDateTime date,
@@ -94,10 +96,11 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Map<String, String> deleteCase(Integer cid) {
-        int res= caseMedicineMapper.deleteByCaseId(cid);
+        int cmres= caseMedicineMapper.deleteByCaseId(cid);
+        int clres= caseLabMapper.deleteByCaseId(cid);
         int result=caseMapper.deleteById(cid);
         Map<String,String> caseMap=new HashMap<>();
-        if(res < 1||result<1){
+        if(cmres < 1||result<1||clres<1){
             caseMap.put("error_message", "delete fail");
         }
         else{
