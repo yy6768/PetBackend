@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.petbackend.dto.QuestionDTO;
 import com.example.petbackend.mapper.CaseMapper;
 import com.example.petbackend.mapper.CateMapper;
 import com.example.petbackend.mapper.IllMapper;
@@ -18,7 +19,10 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.time.LocalDateTime;
 
 @Service
 public class GetCaseServiceImpl implements GetCaseService {
@@ -41,11 +45,17 @@ public class GetCaseServiceImpl implements GetCaseService {
     }
 
     @Override
-    public Map<String, Object> getByDateCase(Integer page, Integer pageSize,Date date) {
-        IPage<Illcase> casePage = new Page<>(page, pageSize);
-        QueryWrapper<Illcase> caseQueryWrapper = new QueryWrapper<>();
-        caseQueryWrapper.like("date", date);
-        return getStringObjectMap(casePage, caseQueryWrapper, caseMapper);
+    public Map<String, Object> getByDateCase(Integer page, Integer pageSize, LocalDateTime start,LocalDateTime end) {
+        List<Illcase> illcaseList=caseMapper.selectRangeByDate(start,end);
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//        String formattedDateTime = date.format(formatter);
+
+        int totalSize = illcaseList.size();
+        int fromIndex = (page - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalSize);
+        List<Illcase> pageList = illcaseList.subList(fromIndex, toIndex);
+        long total=illcaseList.size();
+        return getStringObjectMapOut(pageList,total);
     }
 
     @NotNull
@@ -54,11 +64,12 @@ public class GetCaseServiceImpl implements GetCaseService {
         casePage = caseMapper.selectPage(casePage, caseQueryWrapper);
         Map<String, Object> caseMap = new HashMap<>();
         List<Illcase> illcaseList =casePage.getRecords();
-        return getStringObjectMapOut(caseMap, illcaseList,total);
+        return getStringObjectMapOut(illcaseList,total);
     }
 
     @NotNull
-    static Map<String, Object> getStringObjectMapOut(Map<String, Object> caseMap, List<Illcase> illcaseList,long total) {
+    static Map<String, Object> getStringObjectMapOut(List<Illcase> illcaseList,long total) {
+        Map<String, Object> caseMap = new HashMap<>();
         if(illcaseList !=null && !illcaseList.isEmpty()) {
             caseMap.put("error_message", "success");
             caseMap.put("case_list", illcaseList);
@@ -80,9 +91,9 @@ public class GetCaseServiceImpl implements GetCaseService {
         casePage = caseMapper.selectPage(casePage, Wrappers.<Illcase>lambdaQuery()
                 .in(Illcase::getIllId, illIdList));
         List<Illcase> illcaseList =casePage.getRecords();
-        Map<String, Object> caseMap = new HashMap<>();
+
         long total=illIdList.size();
-        return getStringObjectMapOut(caseMap, illcaseList,total);
+        return getStringObjectMapOut(illcaseList,total);
     }
 
 

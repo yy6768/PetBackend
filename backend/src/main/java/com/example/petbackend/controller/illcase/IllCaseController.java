@@ -1,6 +1,7 @@
 package com.example.petbackend.controller.illcase;
 
 import com.example.petbackend.service.illcase.*;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
 
@@ -91,10 +93,12 @@ public class IllCaseController {
 
     @GetMapping("/case/get_by_date")
     public Map<String,Object> getByDateCase(@RequestParam Map<String,String> map) throws ParseException {
-        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(map.get("date"));
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime start = LocalDateTime.parse(map.get("start"),df);
+        LocalDateTime end = LocalDateTime.parse(map.get("end"),df);
         Integer page = Integer.valueOf(map.get("page"));
         Integer pageSize = Integer.valueOf(map.get("pageSize"));
-        return getCaseService.getByDateCase(page, pageSize,date);
+        return getCaseService.getByDateCase(page, pageSize,start,end);
     }
 
     @PostMapping("/case/add_lab")
