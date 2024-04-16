@@ -1,8 +1,12 @@
 package com.example.petbackend.service.impl.paper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.petbackend.mapper.ExamMapper;
+import com.example.petbackend.mapper.ExamUserMapper;
 import com.example.petbackend.mapper.PaperMapper;
 import com.example.petbackend.mapper.PaperQuestionMapper;
+import com.example.petbackend.pojo.Exam;
+import com.example.petbackend.pojo.ExamUser;
 import com.example.petbackend.pojo.Paper;
 import com.example.petbackend.pojo.PaperQuestion;
 import com.example.petbackend.service.paper.PaperService;
@@ -12,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -21,6 +26,10 @@ public class PaperServiceImpl implements PaperService {
     PaperMapper paperMapper;
     @Autowired
     PaperQuestionMapper paperQuestionMapper;
+    @Autowired
+    ExamMapper examMapper;
+    @Autowired
+    ExamUserMapper examUserMapper;
 
     //添加试卷
     @Override
@@ -39,9 +48,20 @@ public class PaperServiceImpl implements PaperService {
         return paperMap;
     }
 
-    //删除试卷
+    //删除试卷，级联删除考试以及exam_user表的相关记录
     @Override
     public Map<String, String> deletePaper(Integer paper_id){
+        //删除exam表以及exam_user表的级联数据
+        QueryWrapper<Exam> examQueryWrapper = new QueryWrapper<>();
+        examQueryWrapper.eq("paper_id", paper_id);
+        List<Exam> examList = examMapper.selectList(examQueryWrapper);
+        for(Exam exam: examList){
+            QueryWrapper<ExamUser> examUserQueryWrapper = new QueryWrapper<>();
+            examUserQueryWrapper.eq("exam_id", exam.getExamId());
+            examUserMapper.delete(examUserQueryWrapper);
+            examMapper.deleteById(exam);
+        }
+
         QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
         paperQuestionQueryWrapper.eq("paper_id", paper_id);
         paperQuestionMapper.delete(paperQuestionQueryWrapper);
