@@ -20,7 +20,7 @@ public class ExamController {
      * @param map
      * @return
      */
-    @PostMapping("/createExam")
+    @PostMapping("/exam/add")
     public Map<String, String> addExam(@RequestParam Map<String, String> map){
         String exam_name = map.get("exam_name");
         Integer paper_id = Integer.valueOf(map.get("paper_id"));
@@ -42,7 +42,7 @@ public class ExamController {
      * @param map
      * @return
      */
-    @DeleteMapping("/deleteExam")
+    @DeleteMapping("/exam/delete")
     public Map<String, String> deleteExam(@RequestParam Map<String, String> map){
         Integer exam_id = Integer.valueOf(map.get("exam_id"));
         return examService.deleteExam(exam_id);
@@ -53,7 +53,7 @@ public class ExamController {
      * @param map
      * @return
      */
-    @PostMapping("/updateExam")
+    @PostMapping("/exam/update")
     public Map<String, String> updateExam(@RequestParam Map<String, String> map){
         Integer exam_id = Integer.valueOf(map.get("exam_id"));
         String exam_name = map.get("exam_name");
