@@ -157,7 +157,6 @@ public class IllCaseController {
 
     @GetMapping("/case/get_all_lab")
     public Map<String, Object> getAllLab(){
-
         return caseService.getAllLab();
     }
 
