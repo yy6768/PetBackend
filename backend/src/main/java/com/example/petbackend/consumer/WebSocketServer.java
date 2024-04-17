@@ -28,13 +28,14 @@ public class WebSocketServer {
 
     // 用户列表
     final public static ConcurrentHashMap<Integer, WebSocketServer> users = new ConcurrentHashMap<>();
+    private int eu_id;
     private User user;
     private Exam exam;
 
     // 每个链接用session维护
     private Session session = null;
 
-    private ExamRedisUtil redisUtil;
+    private static ExamRedisUtil redisUtil;
 
     // websocket 不是spring标准的单例模式，所以需要特殊处理
     public static UserMapper userMapper;
@@ -70,6 +71,13 @@ public class WebSocketServer {
      * 处理新建考试实体/重新恢复考试实体
      */
     private void startExam() {
+        boolean exists = redisUtil.containsKey(user.getUid().toString());
+        if (!exists) {
+            // 创建一个新的键值对
+
+        } else {
+            // sendMessage
+        }
 
     }
 
@@ -88,7 +96,7 @@ public class WebSocketServer {
         this.session = session;
 
         try {
-            int eu_id = Integer.parseInt(idStr);
+            this.eu_id = Integer.parseInt(idStr);
             ExamUser examUser = examUserMapper.selectById(eu_id);
             this.user = userMapper.selectById(examUser.getUid());
             this.exam = examMapper.selectById(examUser.getExamId());
@@ -124,7 +132,7 @@ public class WebSocketServer {
         if (message == null || message.isEmpty()) throw new IOException();
 
         if ("startExam".equalsIgnoreCase(message)) {
-            // 处理新开始测试还是重新连接
+
             startExam();
         } else if ("endExam".equalsIgnoreCase(message)) {
             endExam();
