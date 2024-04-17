@@ -19,8 +19,12 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchRequest;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -103,8 +107,14 @@ public class CaseServiceImpl implements CaseService {
         int clres= caseLabMapper.deleteByCaseId(cid);
         int result=caseMapper.deleteById(cid);
         Map<String,String> caseMap=new HashMap<>();
-        if(cmres < 1||result<1||clres<1){
+        if(cmres < 1&&result<1&&clres<1){
             caseMap.put("error_message", "delete fail");
+        }
+        else if(cmres<1){
+            caseMap.put("error_message", "case已删除，caseMedicine删除失败或者不存在这个关系");
+        }
+        else if(clres<1){
+            caseMap.put("error_message", "case已删除，caseLab删除失败或者不存在这个关系");
         }
         else{
             caseMap.put("error_message", "success");
@@ -209,6 +219,18 @@ public class CaseServiceImpl implements CaseService {
         medicineMap.put("medicine_list", medicineList);
 
         return new JSONObject(medicineMap);
+    }
+
+    public SearchResponse search(String indexName, String queryString) throws IOException {
+        RestHighLevelClient client = new RestHighLevelClient(
+                RestClient.builder(new HttpHost("localhost", 9200, "http")));
+        SearchRequest searchRequest = new SearchRequest(indexName);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(QueryBuilders.matchQuery("basic_situation", queryString));
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+        // 处理搜索结果...
+        return searchResponse;
     }
 
     @Override

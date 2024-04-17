@@ -33,4 +33,10 @@ public class ElasticSearchConfig {
                         .setConnectionRequestTimeout(connectionRequestTimeout));
         return new RestHighLevelClient(builder);
     }
+    @Bean
+    public RestHighLevelClient client() {
+        RestClientBuilder builder = RestClient.builder(
+                new HttpHost("localhost", 9200, "http"));
+        return new RestHighLevelClient(builder);
+    }
 }
