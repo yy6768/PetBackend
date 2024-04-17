@@ -1,5 +1,7 @@
 package com.example.petbackend.consumer;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.petbackend.dto.ExamRedisDTO;
 import com.example.petbackend.mapper.ExamMapper;
 import com.example.petbackend.mapper.ExamUserMapper;
 import com.example.petbackend.mapper.UserMapper;
@@ -11,6 +13,7 @@ import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.converter.MessageConversionException;
 import org.springframework.stereotype.Component;
 
@@ -45,6 +48,7 @@ public class WebSocketServer {
 
 
 
+
     @Autowired
     public void setUserMapper(UserMapper userMapper) {
         WebSocketServer.userMapper = userMapper;
@@ -71,6 +75,7 @@ public class WebSocketServer {
      */
     private void startExam() {
 
+
     }
 
 
@@ -80,6 +85,26 @@ public class WebSocketServer {
     private void endExam() {
 
     }
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+    /**
+     * 处理提交答案
+     */
+    private void addAnswer(String num, String option) {
+        //根据uid和exam_id找到eu_id
+        QueryWrapper<ExamUser> examUserQueryWrapper = new QueryWrapper<>();
+        examUserQueryWrapper.eq("uid", user.getUid()).eq("exam_id", exam.getExamId());
+        Integer eu_id = examUserMapper.selectOne(examUserQueryWrapper).getEuId();
+        if(eu_id != null){
+            //根据eu_id获取对应的DTO类
+            ExamRedisDTO examRedisDTO = (ExamRedisDTO) redisTemplate.opsForValue().get("eu_id_" + eu_id);
+            //更新此DTO的数据
+            examRedisDTO.getAnswerMap().put(num, option);
+            redisTemplate.opsForValue().set("eu_id_" + eu_id, examRedisDTO);
+        }
+    }
+
 
 
     //开启连接
@@ -128,7 +153,19 @@ public class WebSocketServer {
             startExam();
         } else if ("endExam".equalsIgnoreCase(message)) {
             endExam();
-        } else {
+        } else if(message.toLowerCase().startsWith("answer")) {  //处理答案选项
+            //解析消息内容
+            String[] parts = message.split("\\s+");
+            if(parts.length >= 3){
+                String num = parts[1]; // 题号
+                String option = parts[2]; // 选项
+                addAnswer(num, option);
+            } else{
+                System.out.println(message);
+                throw new MessageConversionException("websocket信息处理错误");
+            }
+        }
+        else {
             System.out.println(message);
             throw new MessageConversionException("websocket信息处理错误");
         }
