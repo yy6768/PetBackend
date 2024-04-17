@@ -33,13 +33,13 @@ public class PaperServiceImpl implements PaperService {
 
     //添加试卷
     @Override
-    public Map<String, String> addPaper(Integer uid, String paper_name, Timestamp time, Date date, Integer[] question_list) {
+    public Map<String, String> addPaper(Integer uid, String paper_name, Timestamp time, Date date, List<Integer> question_list) {
         Paper paper = new Paper(paper_name, time, uid, date);
         paperMapper.insert(paper);
         int paper_id = paper.getPaperId();
         // 插入试卷题目关联表
-        for (int i = 0; i < question_list.length; i++) {
-            PaperQuestion paperQuestion = new PaperQuestion(paper_id, question_list[i], i + 1);
+        for (int i = 0; i < question_list.size(); i++) {
+            PaperQuestion paperQuestion = new PaperQuestion(paper_id, question_list.get(i), i + 1);
             paperQuestionMapper.insert(paperQuestion);
         }
         Map<String, String> paperMap = new HashMap<>();
@@ -78,7 +78,7 @@ public class PaperServiceImpl implements PaperService {
 
     //修改试卷
     @Override
-    public Map<String, String> updatePaper(Integer uid, Integer paper_id, String paper_name, Timestamp time, Integer[] question_list){
+    public Map<String, String> updatePaper(Integer uid, Integer paper_id, String paper_name, Timestamp time, List<Integer> question_list){
         Paper paper = paperMapper.selectById(paper_id);
         int auth = paper.getUid();
         Map<String, String> paperMap = new HashMap<>();
@@ -94,8 +94,8 @@ public class PaperServiceImpl implements PaperService {
             paperQuestionQueryWrapper.eq("paper_id", paper_id);
             paperQuestionMapper.delete(paperQuestionQueryWrapper);
             // 把新的题目列表插进去
-            for (int i = 0; i < question_list.length; i++) {
-                PaperQuestion paperQuestion = new PaperQuestion(paper_id, question_list[i], i + 1);
+            for (int i = 0; i < question_list.size(); i++) {
+                PaperQuestion paperQuestion = new PaperQuestion(paper_id, question_list.get(i), i + 1);
                 paperQuestionMapper.insert(paperQuestion);
             }
             paperMap.put("error_message", "success");
