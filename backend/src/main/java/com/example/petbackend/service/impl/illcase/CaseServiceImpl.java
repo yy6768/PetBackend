@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.petbackend.dto.IllcaseDTO;
+import com.example.petbackend.dto.LabDTO;
+import com.example.petbackend.dto.MedicineDTO;
 import com.example.petbackend.mapper.*;
 import com.example.petbackend.pojo.*;
 import com.example.petbackend.service.illcase.CaseService;
@@ -151,6 +153,21 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public Map<String, Object> getByIdCase(Integer cid) {
         Illcase illcase = caseMapper.selectById(cid);
+        List<CaseLab> caseLabList=caseLabMapper.selectByCid(cid);
+        List<LabDTO> labDTOList=new ArrayList<>();
+        for(CaseLab caseLab:caseLabList){
+            Lab lab=labMapper.selectById(caseLab.getLabId());
+            LabDTO labDTO=new LabDTO(lab.getLabName(),lab.getLabCost(),caseLab.getLabResult(),caseLab.getLabPhoto());
+            labDTOList.add(labDTO);
+        }
+        List<CaseMedicine> caseMedicineList=caseMedicineMapper.selectByCid(cid);
+        List<MedicineDTO> medicineDTOList=new ArrayList<>();
+        for(CaseMedicine caseMedicine:caseMedicineList){
+            Medicine medicine=medicineMapper.selectById(caseMedicine.getMedicineId());
+            MedicineDTO medicineDTO=new MedicineDTO(medicine.getMedicineName(),medicine.getMedicineCost());
+            medicineDTOList.add(medicineDTO);
+        }
+
         Map<String,Object> caseMap=new HashMap<>();
         if(illcase!=null){
             caseMap.put("error_message", "success");
@@ -159,7 +176,8 @@ public class CaseServiceImpl implements CaseService {
             caseMap.put("error_message", "get case by id fail");
         }
         caseMap.put("case", illcase);
-
+        caseMap.put("lab_item",labDTOList);
+        caseMap.put("medicine_item",medicineDTOList);
         return caseMap;
     }
 
