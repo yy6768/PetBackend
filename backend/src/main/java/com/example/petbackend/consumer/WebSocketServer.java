@@ -48,8 +48,8 @@ public class WebSocketServer {
     /**
      * 接受消息
      * 分为几类消息：
-     * 开启游戏 startExam
-     * 关闭游戏 endExam
+     * 开始考试 startExam
+     * 关闭考试 endExam
      * @param message 接受到的消息
      * @param session websocket的session信息
      * @throws IOException

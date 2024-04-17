@@ -1,4 +1,5 @@
 package com.example.petbackend.consumer.utils;
 
-public class ExamSession {
+public class ExamSession extends Thread {
+
 }
