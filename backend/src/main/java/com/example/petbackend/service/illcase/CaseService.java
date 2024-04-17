@@ -1,6 +1,8 @@
 package com.example.petbackend.service.illcase;
 
 
+import org.elasticsearch.action.search.SearchResponse;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -23,4 +25,6 @@ public interface CaseService {
     Map<String, Object> getAllMedicine();
 
     boolean createIllcaseIndex(String index) throws IOException;
+
+    SearchResponse search(String indexName, String queryString) throws IOException;
 }

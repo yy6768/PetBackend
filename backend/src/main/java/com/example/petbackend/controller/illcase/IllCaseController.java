@@ -1,6 +1,7 @@
 package com.example.petbackend.controller.illcase;
 
 import com.example.petbackend.service.illcase.*;
+import org.elasticsearch.action.search.SearchResponse;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -169,6 +170,13 @@ public class IllCaseController {
     @PutMapping("/case/new_index")
     public boolean createIllcaseIndex(String index) throws IOException {
         return caseService.createIllcaseIndex(index);
+    }
+
+    @GetMapping("/case/search")
+    public SearchResponse searchResponse(@RequestParam Map<String,String> map) throws IOException {
+        String indexName=map.get("index_name");
+        String queryString=map.get("query_string");
+        return caseService.search(indexName,queryString);
     }
 
 }
