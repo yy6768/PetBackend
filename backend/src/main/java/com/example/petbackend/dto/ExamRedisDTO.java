@@ -14,9 +14,9 @@ import java.util.Map;
 public class ExamRedisDTO {
 
     @Id
-    private Integer eu_id;  //exam_user_id主键
+    private Integer euId;  //exam_user_id主键
     private Integer uid;
-    private Integer exam_id;
+    private Integer examId;
     private Timestamp time;  //考试时间
     private Map<String, String> answerMap; //题号-答案
 

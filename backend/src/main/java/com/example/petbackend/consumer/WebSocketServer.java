@@ -1,6 +1,5 @@
 package com.example.petbackend.consumer;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.petbackend.dto.ExamRedisDTO;
 import com.example.petbackend.mapper.ExamMapper;
 import com.example.petbackend.mapper.ExamUserMapper;
@@ -8,7 +7,8 @@ import com.example.petbackend.mapper.UserMapper;
 import com.example.petbackend.pojo.Exam;
 import com.example.petbackend.pojo.ExamUser;
 import com.example.petbackend.pojo.User;
-import com.example.petbackend.utils.ExamRedisUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
@@ -18,6 +18,8 @@ import org.springframework.messaging.converter.MessageConversionException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -26,18 +28,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * 发送消息，后端实时判断信息并完成渲染
  */
 @Component
-@ServerEndpoint("/api/exam/{eu_id}")
+@ServerEndpoint("/api/exam/{euId}")
 public class WebSocketServer {
 
     // 用户列表
     final public static ConcurrentHashMap<Integer, WebSocketServer> users = new ConcurrentHashMap<>();
+    private int euId;
     private User user;
     private Exam exam;
 
     // 每个链接用session维护
     private Session session = null;
-
-    private ExamRedisUtil redisUtil;
 
     // websocket 不是spring标准的单例模式，所以需要特殊处理
     public static UserMapper userMapper;
@@ -45,6 +46,7 @@ public class WebSocketServer {
     public static ExamMapper examMapper;
 
     public static ExamUserMapper examUserMapper;
+    private static RedisTemplate<String, Object> redisTemplate;
 
 
 
@@ -64,16 +66,59 @@ public class WebSocketServer {
         WebSocketServer.examUserMapper = examUserMapper;
     }
 
-
     @Autowired
-    public void setRedisUtil(ExamRedisUtil redisUtil) {
-        this.redisUtil = redisUtil;
+    public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {
+        WebSocketServer.redisTemplate = redisTemplate;
+    }
+
+    /**
+     * 创建新的Exam缓存信息
+     * @param euId 当前Exam缓存的主键
+     * @param uid 用户id
+     * @param examId 考试id
+     * @return 返回新建立的redis缓存信息
+     */
+    private ExamRedisDTO createNewExamRedisDTO(Integer euId, Integer uid, Integer examId) {
+        ExamRedisDTO examRedisDTO = new ExamRedisDTO();
+        examRedisDTO.setEuId(euId);
+        examRedisDTO.setUid(uid);
+        examRedisDTO.setExamId(examId);
+        examRedisDTO.setTime(new Timestamp(System.currentTimeMillis()));
+        examRedisDTO.setAnswerMap(new HashMap<>());  // 初始化一个空的答案映射
+        return examRedisDTO;
+    }
+
+    private String serializeExamRedisDTO(ExamRedisDTO examRedisDTO) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(examRedisDTO);
     }
 
     /**
      * 处理新建考试实体/重新恢复考试实体
      */
     private void startExam() {
+        String key = "eu_id_" + euId;
+        boolean exists = Boolean.TRUE.equals(redisTemplate.hasKey(key));
+        if (!exists) {
+            // 创建一个新ExamRedisDTO
+            ExamRedisDTO examRedisDTO = createNewExamRedisDTO(euId, user.getUid(), exam.getExamId());
+            // 存储到 Redis
+            redisTemplate.opsForValue().set(key, examRedisDTO);
+            // 可选：向前端发送消息，表明已创建新的考试实例
+            sendMessage("New exam started for EU_ID: " + euId);
+        } else {
+            // 从 Redis 中获取现有的 ExamRedisDTO
+            ExamRedisDTO examRedisDTO = (ExamRedisDTO) redisTemplate.opsForValue().get(key);
+            if (examRedisDTO != null) {
+                // 序列化 ExamRedisDTO 发送给前端
+                try {
+                    String message = serializeExamRedisDTO(examRedisDTO);
+                    sendMessage(message);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException("Error serializing exam data", e);
+                }
+            }
+        }
 
 
     }
@@ -86,22 +131,16 @@ public class WebSocketServer {
 
     }
 
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
     /**
      * 处理提交答案
      */
     private void addAnswer(String num, String option) {
-        //根据uid和exam_id找到eu_id
-        QueryWrapper<ExamUser> examUserQueryWrapper = new QueryWrapper<>();
-        examUserQueryWrapper.eq("uid", user.getUid()).eq("exam_id", exam.getExamId());
-        Integer eu_id = examUserMapper.selectOne(examUserQueryWrapper).getEuId();
-        if(eu_id != null){
-            //根据eu_id获取对应的DTO类
-            ExamRedisDTO examRedisDTO = (ExamRedisDTO) redisTemplate.opsForValue().get("eu_id_" + eu_id);
-            //更新此DTO的数据
+        //根据euId获取对应的DTO类
+        ExamRedisDTO examRedisDTO = (ExamRedisDTO) WebSocketServer.redisTemplate.opsForValue().get("eu_id_" + euId);
+        //更新此DTO的数据
+        if(examRedisDTO != null) {
             examRedisDTO.getAnswerMap().put(num, option);
-            redisTemplate.opsForValue().set("eu_id_" + eu_id, examRedisDTO);
+            WebSocketServer.redisTemplate.opsForValue().set("eu_id_" + euId, examRedisDTO);
         }
     }
 
@@ -109,12 +148,12 @@ public class WebSocketServer {
 
     //开启连接
     @OnOpen
-    public void onOpen(Session session, @PathParam("eu_id") String idStr) throws IOException {
+    public void onOpen(Session session, @PathParam("euId") String idStr) throws IOException {
         this.session = session;
 
         try {
-            int eu_id = Integer.parseInt(idStr);
-            ExamUser examUser = examUserMapper.selectById(eu_id);
+            this.euId = Integer.parseInt(idStr);
+            ExamUser examUser = examUserMapper.selectById(euId);
             this.user = userMapper.selectById(examUser.getUid());
             this.exam = examMapper.selectById(examUser.getExamId());
             if (this.user != null) {
@@ -149,7 +188,6 @@ public class WebSocketServer {
         if (message == null || message.isEmpty()) throw new IOException();
 
         if ("startExam".equalsIgnoreCase(message)) {
-            // 处理新开始测试还是重新连接
             startExam();
         } else if ("endExam".equalsIgnoreCase(message)) {
             endExam();
