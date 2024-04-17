@@ -15,7 +15,6 @@ import org.springframework.messaging.converter.MessageConversionException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ConcurrentModificationException;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -24,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 发送消息，后端实时判断信息并完成渲染
  */
 @Component
-@ServerEndpoint("/websocket/{eu_id}")
+@ServerEndpoint("/api/exam/{eu_id}")
 public class WebSocketServer {
 
     // 用户列表
@@ -92,6 +91,7 @@ public class WebSocketServer {
             int eu_id = Integer.parseInt(idStr);
             ExamUser examUser = examUserMapper.selectById(eu_id);
             this.user = userMapper.selectById(examUser.getUid());
+            this.exam = examMapper.selectById(examUser.getExamId());
             if (this.user != null) {
                 users.put(this.user.getUid(), this);
                 System.out.println("connect!");
