@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 public class LabDTO {
+    private Integer labId;
     private String lab_name;
     private Double lab_cost;
     private String labResult;

@@ -157,14 +157,14 @@ public class CaseServiceImpl implements CaseService {
         List<LabDTO> labDTOList=new ArrayList<>();
         for(CaseLab caseLab:caseLabList){
             Lab lab=labMapper.selectById(caseLab.getLabId());
-            LabDTO labDTO=new LabDTO(lab.getLabName(),lab.getLabCost(),caseLab.getLabResult(),caseLab.getLabPhoto());
+            LabDTO labDTO=new LabDTO(lab.getLabId(),lab.getLabName(),lab.getLabCost(),caseLab.getLabResult(),caseLab.getLabPhoto());
             labDTOList.add(labDTO);
         }
         List<CaseMedicine> caseMedicineList=caseMedicineMapper.selectByCid(cid);
         List<MedicineDTO> medicineDTOList=new ArrayList<>();
         for(CaseMedicine caseMedicine:caseMedicineList){
             Medicine medicine=medicineMapper.selectById(caseMedicine.getMedicineId());
-            MedicineDTO medicineDTO=new MedicineDTO(medicine.getMedicineName(),medicine.getMedicineCost());
+            MedicineDTO medicineDTO=new MedicineDTO(medicine.getMedicineId(),medicine.getMedicineName(),medicine.getMedicineCost());
             medicineDTOList.add(medicineDTO);
         }
 

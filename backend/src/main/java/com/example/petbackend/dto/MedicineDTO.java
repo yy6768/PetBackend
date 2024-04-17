@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MedicineDTO {
+    private Integer medicineId;
     private String medicineName;
     private Double medicineCost;
 }
