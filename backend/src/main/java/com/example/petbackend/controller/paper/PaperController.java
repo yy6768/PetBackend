@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,19 +23,14 @@ public class PaperController {
 
     //添加试卷
     @PostMapping("/paper/add")
-    public Map<String, String> addPaper(@RequestParam Map<String, String> map){
-        Integer uid = Integer.valueOf( map.get("uid"));
-        String paper_name =  map.get("paper_name");
-        Timestamp time = Timestamp.valueOf(map.get("time"));
+    public Map<String, String> addPaper(@RequestBody Map<String, Object> map){
+        Integer uid = Integer.valueOf(map.get("uid").toString());
+        String paper_name = (String) map.get("paper_name");
+        Timestamp time = Timestamp.valueOf(map.get("time").toString());
         //生成当前时间
         Date date = new Date(System.currentTimeMillis());
         // 将题目列表字符串转换为数组
-        String questionListStr = map.get("question_list");
-        String[] questionListArray = questionListStr.split(",");
-        Integer[] question_list = new Integer[questionListArray.length];
-        for (int i = 0; i < questionListArray.length; i++) {
-            question_list[i] = Integer.parseInt(questionListArray[i].trim());
-        }
+        List<Integer> question_list = (List<Integer>) map.get("question_list");
         return paperService.addPaper(uid, paper_name, time, date, question_list);
     }
 
@@ -45,20 +41,14 @@ public class PaperController {
         return paperService.deletePaper(paper_id);
     }
 
-    //修改试卷
     @PostMapping("/paper/update")
-    public Map<String, String> updatePaper(@RequestParam Map<String, String> map){
-        Integer uid = Integer.valueOf(map.get("uid"));
-        Integer paper_id = Integer.valueOf(map.get("paper_id"));
-        String paper_name = map.get("paper_name");
-        Timestamp time = Timestamp.valueOf(map.get("time"));
+    public Map<String, String> updatePaper(@RequestBody Map<String, Object> map){
+        Integer uid = Integer.valueOf(map.get("uid").toString());
+        Integer paper_id = Integer.valueOf(map.get("paper_id").toString());
+        String paper_name = (String) map.get("paper_name");
+        Timestamp time = Timestamp.valueOf(map.get("time").toString());
         // 将题目列表字符串转换为数组
-        String questionListStr = map.get("question_list");
-        String[] questionListArray = questionListStr.split(",");
-        Integer[] question_list = new Integer[questionListArray.length];
-        for (int i = 0; i < questionListArray.length; i++) {
-            question_list[i] = Integer.parseInt(questionListArray[i].trim());
-        }
+        List<Integer> question_list = (List<Integer>) map.get("question_list");
         return paperService.updatePaper(uid,paper_id,paper_name,time,question_list);
 
     }
