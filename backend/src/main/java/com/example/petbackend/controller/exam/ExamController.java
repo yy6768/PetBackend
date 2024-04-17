@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,19 +21,14 @@ public class ExamController {
      * @return
      */
     @PostMapping("/exam/add")
-    public Map<String, String> addExam(@RequestParam Map<String, String> map){
-        String exam_name = map.get("exam_name");
-        Integer paper_id = Integer.valueOf(map.get("paper_id"));
-        String timeStr = map.get("begin_time");
+    public Map<String, String> addExam(@RequestBody Map<String, Object> map){
+        String exam_name = (String) map.get("exam_name");
+        Integer paper_id = Integer.valueOf(map.get("paper_id").toString());
+        String timeStr = (String) map.get("begin_time");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime begin_time = LocalDateTime.parse(timeStr,formatter);
         //将user_list键转化为数组
-        String userListStr = map.get("user_list");
-        String[] userListArray = userListStr.split(",");
-        Integer[] user_list = new Integer[userListArray.length];
-        for(int i = 0; i < userListArray.length; i++){
-            user_list[i] = Integer.parseInt(userListArray[i].trim());
-        }
+        List<Integer> user_list = (List<Integer>) map.get("user_list");
         return examService.addExam(exam_name, paper_id, begin_time, user_list);
     }
 
@@ -53,20 +49,15 @@ public class ExamController {
      * @return
      */
     @PostMapping("/exam/update")
-    public Map<String, String> updateExam(@RequestParam Map<String, String> map){
-        Integer exam_id = Integer.valueOf(map.get("exam_id"));
-        String exam_name = map.get("exam_name");
-        Integer paper_id = Integer.valueOf(map.get("paper_id"));
-        String timeStr = map.get("begin_time");
+    public Map<String, String> updateExam(@RequestBody Map<String, Object> map){
+        Integer exam_id = Integer.valueOf(map.get("exam_id").toString());
+        String exam_name = (String) map.get("exam_name");
+        Integer paper_id = Integer.valueOf(map.get("paper_id").toString());
+        String timeStr = (String) map.get("begin_time");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime begin_time = LocalDateTime.parse(timeStr,formatter);
         //将user_list键转化为数组
-        String userListStr = map.get("user_list");
-        String[] userListArray = userListStr.split(",");
-        Integer[] user_list = new Integer[userListArray.length];
-        for(int i = 0; i < userListArray.length; i++){
-            user_list[i] = Integer.parseInt(userListArray[i].trim());
-        }
+        List<Integer> user_list = (List<Integer>) map.get("user_list");
         return examService.updateExam(exam_id, exam_name, paper_id, begin_time, user_list);
     }
 }
