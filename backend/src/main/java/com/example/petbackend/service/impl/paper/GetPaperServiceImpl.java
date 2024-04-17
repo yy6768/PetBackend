@@ -47,10 +47,18 @@ public class GetPaperServiceImpl implements GetPaperService {
             User user = userMapper.selectById(paper.getUid());
             paperMap.put("username", user.getUsername());
             paperMap.put("date", paper.getDate());
-            //获取该试卷的题目列表
+            //求totalMark
             QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
             paperQuestionQueryWrapper.eq("paper_id", paper.getPaperId());
             List<PaperQuestion> paperQuestionList = paperQuestionMapper.selectList(paperQuestionQueryWrapper);
+            Integer totalMark = 0;
+            for(PaperQuestion paperQuestion : paperQuestionList){
+                Integer qid = paperQuestion.getQid();
+                Question question = questionMapper.selectById(qid);
+                totalMark = totalMark + question.getMark();
+            }
+            paperMap.put("totalMark", totalMark);
+            //获取该试卷的题目列表
             List<QuestionOfPaperDTO> questionOfPaperDTOList = new ArrayList<>();
             for(PaperQuestion paperQuestion: paperQuestionList){
                 QuestionOfPaperDTO questionOfPaperDTO = new QuestionOfPaperDTO();
