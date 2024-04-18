@@ -8,14 +8,10 @@ import com.example.petbackend.dto.ExamUserDTO;
 import com.example.petbackend.mapper.*;
 import com.example.petbackend.pojo.*;
 import com.example.petbackend.service.exam.GetExamService;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,18 +54,16 @@ public class GetExamServiceImpl implements GetExamService {
             Paper paper = paperMapper.selectById(exam.getPaperId());
             examDTO.setPaperName(paper.getPaperName());
             examDTO.setTime(paper.getTime());
-            //计算结束时间
-            LocalDateTime time = paper.getTime().toLocalDateTime();
-            LocalDateTime endTime = exam.getBeginTime().plusHours(time.getHour())
-                    .plusMinutes(time.getMinute())
-                    .plusSeconds(time.getSecond())
+            //计算结束时间;
+            LocalDateTime endTime = exam.getBeginTime()
+                    .plusSeconds(paper.getTime())
                             .minusHours(8);
             examDTO.setEndTime(endTime);
             //计算totalMark
             QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
             paperQuestionQueryWrapper.eq("paper_id", paper.getPaperId());
             List<PaperQuestion> paperQuestionList = paperQuestionMapper.selectList(paperQuestionQueryWrapper);
-            Integer totalMark = 0;
+            int totalMark = 0;
             for(PaperQuestion paperQuestion : paperQuestionList){
                 Integer qid = paperQuestion.getQid();
                 Question question = questionMapper.selectById(qid);
@@ -89,7 +83,7 @@ public class GetExamServiceImpl implements GetExamService {
 
             examDTOList.add(examDTO);
         }
-        if(examDTOList != null && !examDTOList.isEmpty()){
+        if(!examDTOList.isEmpty()){
             examMap.put("error_msg", "success");
             examMap.put("total", total);
             examMap.put("exam_list", examDTOList);
@@ -145,17 +139,15 @@ public class GetExamServiceImpl implements GetExamService {
             //查询time，计算end_time
             Paper paper = paperMapper.selectById(exam.getPaperId());
             examUserDTO.setTime(paper.getTime());
-            LocalDateTime time = paper.getTime().toLocalDateTime();
-            LocalDateTime endTime = exam.getBeginTime().plusHours(time.getHour())
-                    .plusMinutes(time.getMinute())
-                    .plusSeconds(time.getSecond())
+            LocalDateTime endTime = exam.getBeginTime()
+                    .plusSeconds(paper.getTime())
                     .minusHours(8);
             examUserDTO.setEndTime(endTime);
             //计算考试总分
             QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
             paperQuestionQueryWrapper.eq("paper_id", paper.getPaperId());
             List<PaperQuestion> paperQuestionList = paperQuestionMapper.selectList(paperQuestionQueryWrapper);
-            Integer totalMark = 0;
+            int totalMark = 0;
             for(PaperQuestion paperQuestion : paperQuestionList){
                 Integer qid = paperQuestion.getQid();
                 Question question = questionMapper.selectById(qid);
@@ -172,7 +164,7 @@ public class GetExamServiceImpl implements GetExamService {
         List<ExamUserDTO> pageList = examUserDTOList.subList(fromIndex, toIndex);
         //返回
         Map<String, Object> examMap = new HashMap<>();
-        if(examUserDTOList != null && !examUserDTOList.isEmpty()){
+        if(!examUserDTOList.isEmpty()){
             examMap.put("error_msg", "success");
             examMap.put("exam_list", pageList);
             examMap.put("total", totalSize);

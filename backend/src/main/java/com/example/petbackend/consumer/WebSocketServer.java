@@ -1,5 +1,6 @@
 package com.example.petbackend.consumer;
 
+import com.example.petbackend.consumer.utils.DynamicExamScheduler;
 import com.example.petbackend.dto.ExamRedisDTO;
 import com.example.petbackend.mapper.ExamMapper;
 import com.example.petbackend.mapper.ExamUserMapper;
@@ -57,6 +58,7 @@ public class WebSocketServer {
 
     private static RedisTemplate<String, Object> redisTemplate;
 
+    private static DynamicExamScheduler dynamicExamScheduler;
 
 
 
@@ -83,19 +85,26 @@ public class WebSocketServer {
         WebSocketServer.redisTemplate = redisTemplate;
     }
 
+    @Autowired
+    public void setDynamicExamScheduler(DynamicExamScheduler dynamicExamScheduler) {
+        WebSocketServer.dynamicExamScheduler = dynamicExamScheduler;
+    }
+
     /**
      * 创建新的Exam缓存信息
-     * @param euId 当前Exam缓存的主键
-     * @param uid 用户id
+     *
+     * @param euId   当前Exam缓存的主键
+     * @param uid    用户id
      * @param examId 考试id
+     * @param endInstant 结束时间
      * @return 返回新建立的redis缓存信息
      */
-    private ExamRedisDTO createNewExamRedisDTO(Integer euId, Integer uid, Integer examId) {
+    private ExamRedisDTO createNewExamRedisDTO(Integer euId, Integer uid, Integer examId, Timestamp endInstant) {
         ExamRedisDTO examRedisDTO = new ExamRedisDTO();
         examRedisDTO.setEuId(euId);
         examRedisDTO.setUid(uid);
         examRedisDTO.setExamId(examId);
-        examRedisDTO.setTime(new Timestamp(System.currentTimeMillis()));
+        examRedisDTO.setTime(endInstant);
         examRedisDTO.setAnswerMap(new HashMap<>());  // 初始化一个空的答案映射
         return examRedisDTO;
     }
@@ -114,9 +123,18 @@ public class WebSocketServer {
 
     private Instant startEndExamTask() {
         Paper paper = paperMapper.selectById(exam.getPaperId());
-        Duration duration = Duration.ofMillis(paper.getTime().getTime());
+        Duration duration = Duration.ofSeconds(paper.getTime());
         LocalDateTime examStartTime = exam.getBeginTime();
-        return examStartTime.plus(duration).atZone(ZoneId.systemDefault()).toInstant();
+        Instant endInstant = examStartTime.plus(duration).atZone(ZoneId.systemDefault()).toInstant();
+        dynamicExamScheduler.scheduleTask(() -> {
+            try {
+                endExam();
+                session.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, endInstant);
+        return endInstant;
     }
 
     /**
@@ -126,12 +144,12 @@ public class WebSocketServer {
         String key = "eu_id_" + euId;
         boolean exists = Boolean.TRUE.equals(redisTemplate.hasKey(key));
         if (!exists) {
+            Instant endInstant = startEndExamTask();
             // 创建一个新ExamRedisDTO
-            ExamRedisDTO examRedisDTO = createNewExamRedisDTO(euId, user.getUid(), exam.getExamId());
+            ExamRedisDTO examRedisDTO = createNewExamRedisDTO(euId, user.getUid(), exam.getExamId(), Timestamp.from(endInstant));
             // 存储到 Redis
             redisTemplate.opsForValue().set(key, examRedisDTO);
-            // 启动定时任务
-            startEndExamTask();
+
             // 向前端发送消息，表明已创建新的考试实例
             sendMessage("New exam started for EU_ID: " + euId);
         } else {

@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor
@@ -16,10 +15,10 @@ public class Paper {
     @TableId(type = IdType.AUTO)
     private Integer paperId;
     private String paperName;
-    private Timestamp time;
+    private Integer time;
     private Integer uid;
     private Date date;
-    public Paper(String paperName, Timestamp time, Integer uid, Date date){
+    public Paper(String paperName, Integer time, Integer uid, Date date){
         this.paperName = paperName;
         this.time = time;
         this.uid = uid;

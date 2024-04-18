@@ -1,15 +1,9 @@
 package com.example.petbackend.controller.paper;
 
-import com.alibaba.fastjson.JSON;
 import com.example.petbackend.service.paper.PaperService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +20,7 @@ public class PaperController {
     public Map<String, String> addPaper(@RequestBody Map<String, Object> map){
         Integer uid = Integer.valueOf(map.get("uid").toString());
         String paper_name = (String) map.get("paper_name");
-        Timestamp time = Timestamp.valueOf(map.get("time").toString());
+        Integer time = Integer.valueOf(map.get("time").toString());
         //生成当前时间
         Date date = new Date(System.currentTimeMillis());
         // 将题目列表字符串转换为数组
@@ -46,7 +40,7 @@ public class PaperController {
         Integer uid = Integer.valueOf(map.get("uid").toString());
         Integer paper_id = Integer.valueOf(map.get("paper_id").toString());
         String paper_name = (String) map.get("paper_name");
-        Timestamp time = Timestamp.valueOf(map.get("time").toString());
+        Integer time = Integer.valueOf(map.get("time").toString());
         // 将题目列表字符串转换为数组
         List<Integer> question_list = (List<Integer>) map.get("question_list");
         return paperService.updatePaper(uid,paper_id,paper_name,time,question_list);
