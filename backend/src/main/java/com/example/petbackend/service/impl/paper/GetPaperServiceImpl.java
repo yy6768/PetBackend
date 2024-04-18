@@ -70,6 +70,7 @@ public class GetPaperServiceImpl implements GetPaperService {
                 questionOfPaperDTO.setContentB(question.getContentB());
                 questionOfPaperDTO.setContentC(question.getContentC());
                 questionOfPaperDTO.setContentD(question.getContentD());
+                questionOfPaperDTO.setQid(question.getQid());
                 questionOfPaperDTOList.add(questionOfPaperDTO);
             }
             paperMap.put("question_list", questionOfPaperDTOList);

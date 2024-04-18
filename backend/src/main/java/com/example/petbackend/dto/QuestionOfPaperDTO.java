@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class QuestionOfPaperDTO {
     private Integer num;
+    private Integer qid; //题目id
     private String description;
     private Integer mark;
     private String contentA;
