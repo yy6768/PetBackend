@@ -17,6 +17,7 @@ public class ExamUserDTO {
     private LocalDateTime beginTime;
     private LocalDateTime endTime;
     private Integer time;   //时限
+    private Integer paper_id;  //试卷id
     private Integer grade; //考生成绩
     private Integer totalMark; //考试总分
 

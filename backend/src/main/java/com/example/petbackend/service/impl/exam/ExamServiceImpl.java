@@ -29,7 +29,7 @@ public class ExamServiceImpl implements ExamService {
         int exam_id = exam.getExamId();
         //将user数组插入表
         for(int i = 0; i < user_list.size(); i++){
-            ExamUser examUser = new ExamUser(exam_id,user_list.get(i));
+            ExamUser examUser = new ExamUser(exam_id,user_list.get(i),null);
             examUserMapper.insert(examUser);
         }
         Map<String, String> examMap= new HashMap<>();
@@ -69,7 +69,7 @@ public class ExamServiceImpl implements ExamService {
             examUserQueryWrapper.eq("exam_id", exam_id);
             examUserMapper.delete(examUserQueryWrapper);
             for(int i = 0; i < user_list.size(); i++){
-                ExamUser examUser = new ExamUser(exam_id, user_list.get(i));
+                ExamUser examUser = new ExamUser(exam_id, user_list.get(i), null);
                 examUserMapper.insert(examUser);
             }
             examMap.put("error_msg", "success");
