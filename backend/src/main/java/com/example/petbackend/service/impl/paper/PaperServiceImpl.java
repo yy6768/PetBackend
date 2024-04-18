@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,7 @@ public class PaperServiceImpl implements PaperService {
 
     //添加试卷
     @Override
-    public Map<String, String> addPaper(Integer uid, String paper_name, Timestamp time, Date date, List<Integer> question_list) {
+    public Map<String, String> addPaper(Integer uid, String paper_name, Integer time, Date date, List<Integer> question_list) {
         Paper paper = new Paper(paper_name, time, uid, date);
         paperMapper.insert(paper);
         int paper_id = paper.getPaperId();
@@ -78,7 +77,7 @@ public class PaperServiceImpl implements PaperService {
 
     //修改试卷
     @Override
-    public Map<String, String> updatePaper(Integer uid, Integer paper_id, String paper_name, Timestamp time, List<Integer> question_list){
+    public Map<String, String> updatePaper(Integer uid, Integer paper_id, String paper_name, Integer time, List<Integer> question_list){
         Paper paper = paperMapper.selectById(paper_id);
         int auth = paper.getUid();
         Map<String, String> paperMap = new HashMap<>();
