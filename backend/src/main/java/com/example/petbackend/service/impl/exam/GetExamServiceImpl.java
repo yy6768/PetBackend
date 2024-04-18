@@ -136,12 +136,12 @@ public class GetExamServiceImpl implements GetExamService {
             Exam exam = examMapper.selectById(examUser.getExamId());
             examUserDTO.setExam_name(exam.getExamName());
             examUserDTO.setBeginTime(exam.getBeginTime());
-            //查询time，计算end_time
+            //查询time，paper_id,计算end_time，
             Paper paper = paperMapper.selectById(exam.getPaperId());
             examUserDTO.setTime(paper.getTime());
+            examUserDTO.setPaper_id(paper.getPaperId());
             LocalDateTime endTime = exam.getBeginTime()
-                    .plusSeconds(paper.getTime())
-                    .minusHours(8);
+                    .plusSeconds(paper.getTime());
             examUserDTO.setEndTime(endTime);
             //计算考试总分
             QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
