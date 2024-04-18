@@ -56,8 +56,7 @@ public class GetExamServiceImpl implements GetExamService {
             examDTO.setTime(paper.getTime());
             //计算结束时间;
             LocalDateTime endTime = exam.getBeginTime()
-                    .plusSeconds(paper.getTime())
-                            .minusHours(8);
+                    .plusSeconds(paper.getTime());
             examDTO.setEndTime(endTime);
             //计算totalMark
             QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
