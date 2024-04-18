@@ -16,6 +16,7 @@ public class ExamUser {
     private Integer euId;
     private Integer examId;
     private Integer uid;
+    private Integer grade;  //考试成绩，添加记录时自动初始化为null
     public ExamUser(Integer examId, Integer uid){
         this.examId = examId;
         this.uid = uid;

@@ -171,6 +171,8 @@ public class WebSocketServer {
         if(examRedisDTO != null) {
             examRedisDTO.getAnswerMap().put(num, option);
             WebSocketServer.redisTemplate.opsForValue().set("eu_id_" + euId, examRedisDTO);
+            //向前端发送信息，表明已将答案存入缓存
+            sendMessage("New answer stored in answerMap for EU_ID: " + euId);
         }
     }
 
