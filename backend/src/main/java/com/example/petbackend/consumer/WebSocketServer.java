@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 发送消息，后端实时判断信息并完成渲染
  */
 @Component
-@ServerEndpoint("/api/exam/{euId}")
+@ServerEndpoint("/ws/exam/{euId}")
 public class WebSocketServer {
 
     // 用户列表
@@ -126,9 +126,11 @@ public class WebSocketServer {
         Duration duration = Duration.ofSeconds(paper.getTime());
         LocalDateTime examStartTime = exam.getBeginTime();
         Instant endInstant = examStartTime.plus(duration).atZone(ZoneId.systemDefault()).toInstant();
+        System.out.println(endInstant);
         dynamicExamScheduler.scheduleTask(() -> {
             try {
                 endExam();
+                System.out.println("Exam" + exam.getExamId() + "end");
                 session.close();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -172,10 +174,15 @@ public class WebSocketServer {
 
 
 
+
+
     /**
      * 处理上交试卷
+     * 1. 通知前端考试结束
+     * 2. 从redis中取出
      */
     public void endExam() {
+        sendMessage("endExam");
 
     }
 
