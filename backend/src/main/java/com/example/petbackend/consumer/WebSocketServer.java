@@ -3,9 +3,11 @@ package com.example.petbackend.consumer;
 import com.example.petbackend.dto.ExamRedisDTO;
 import com.example.petbackend.mapper.ExamMapper;
 import com.example.petbackend.mapper.ExamUserMapper;
+import com.example.petbackend.mapper.PaperMapper;
 import com.example.petbackend.mapper.UserMapper;
 import com.example.petbackend.pojo.Exam;
 import com.example.petbackend.pojo.ExamUser;
+import com.example.petbackend.pojo.Paper;
 import com.example.petbackend.pojo.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,6 +21,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -46,6 +52,9 @@ public class WebSocketServer {
     public static ExamMapper examMapper;
 
     public static ExamUserMapper examUserMapper;
+
+    public static PaperMapper paperMapper;
+
     private static RedisTemplate<String, Object> redisTemplate;
 
 
@@ -65,6 +74,9 @@ public class WebSocketServer {
     public void setExamUserMapper(ExamUserMapper examUserMapper) {
         WebSocketServer.examUserMapper = examUserMapper;
     }
+
+    @Autowired
+    public void setPaperMapper(PaperMapper paperMapper) { WebSocketServer.paperMapper = paperMapper; }
 
     @Autowired
     public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {
@@ -88,9 +100,23 @@ public class WebSocketServer {
         return examRedisDTO;
     }
 
+    /**
+     * 序列化 DTO
+     * @param examRedisDTO DTO实体
+     * @return 序列化后的String
+     * @throws JsonProcessingException 转义成
+     */
     private String serializeExamRedisDTO(ExamRedisDTO examRedisDTO) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(examRedisDTO);
+    }
+
+
+    private Instant startEndExamTask() {
+        Paper paper = paperMapper.selectById(exam.getPaperId());
+        Duration duration = Duration.ofMillis(paper.getTime().getTime());
+        LocalDateTime examStartTime = exam.getBeginTime();
+        return examStartTime.plus(duration).atZone(ZoneId.systemDefault()).toInstant();
     }
 
     /**
@@ -104,7 +130,9 @@ public class WebSocketServer {
             ExamRedisDTO examRedisDTO = createNewExamRedisDTO(euId, user.getUid(), exam.getExamId());
             // 存储到 Redis
             redisTemplate.opsForValue().set(key, examRedisDTO);
-            // 可选：向前端发送消息，表明已创建新的考试实例
+            // 启动定时任务
+            startEndExamTask();
+            // 向前端发送消息，表明已创建新的考试实例
             sendMessage("New exam started for EU_ID: " + euId);
         } else {
             // 从 Redis 中获取现有的 ExamRedisDTO
@@ -124,10 +152,12 @@ public class WebSocketServer {
     }
 
 
+
+
     /**
      * 处理上交试卷
      */
-    private void endExam() {
+    public void endExam() {
 
     }
 
@@ -202,8 +232,7 @@ public class WebSocketServer {
                 System.out.println(message);
                 throw new MessageConversionException("websocket信息处理错误");
             }
-        }
-        else {
+        } else {
             System.out.println(message);
             throw new MessageConversionException("websocket信息处理错误");
         }
