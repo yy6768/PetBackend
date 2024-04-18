@@ -70,7 +70,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations(),
-                new AntPathRequestMatcher("/websocket/**"));
+                new AntPathRequestMatcher("/ws/exam/**"));
     }
 }
 
