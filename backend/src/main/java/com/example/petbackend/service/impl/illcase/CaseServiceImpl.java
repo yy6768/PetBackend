@@ -59,7 +59,7 @@ public class CaseServiceImpl implements CaseService {
         User user=userMapper.selectByName(username).get(0);
         Ill ill= illMapper.selectByName(ill_name).get(0);
         if(user==null||ill==null){
-            caseMap.put("error_message", "未找到对应user或ill");
+            caseMap.put("error_message", "未找到对应用户和病种");
         }
         else{
             Illcase illcase = new Illcase(user.getUid(), ill.getIllId(), date,basic_situation,photo,result,therapy,surgery_video);
@@ -80,8 +80,8 @@ public class CaseServiceImpl implements CaseService {
             if(basic_situation==null){
                 basic_situation="暂无内容";
             }
-            else if(basic_situation.length()>255){
-                caseMap.put("error_message", "basic_situation是长文本");
+            else if(basic_situation.length()>10000){
+                caseMap.put("error_message", "病例描述过");
                 return caseMap;
             }
             if(photo==null||photo.length()==0)photo="http://tecentapi.empty.image";
@@ -93,7 +93,7 @@ public class CaseServiceImpl implements CaseService {
             res=caseMapper.updateById(illcase);
         }
         if(res < 1){
-            caseMap.put("error_message", "update fail");
+            caseMap.put("error_message", "更新失败");
         }
         else{
             caseMap.put("error_message", "success");
@@ -107,14 +107,14 @@ public class CaseServiceImpl implements CaseService {
         int clres= caseLabMapper.deleteByCaseId(cid);
         int result=caseMapper.deleteById(cid);
         Map<String,String> caseMap=new HashMap<>();
-        if(cmres < 1&&result<1&&clres<1){
-            caseMap.put("error_message", "delete fail");
+        if(cmres < 1 && result<1 && clres<1){
+            caseMap.put("error_message", "删除失败");
         }
-        else if(cmres<1){
-            caseMap.put("error_message", "case已删除，caseMedicine删除失败或者不存在这个关系");
+        else if(cmres < 1){
+            caseMap.put("error_message", "对应化验项目删除失败");
         }
-        else if(clres<1){
-            caseMap.put("error_message", "case已删除，caseLab删除失败或者不存在这个关系");
+        else if(clres < 1){
+            caseMap.put("error_message", "对应化验项目删除失败");
         }
         else{
             caseMap.put("error_message", "success");
@@ -153,7 +153,7 @@ public class CaseServiceImpl implements CaseService {
             caseMap.put("case_list", illcaseDTOList);
             caseMap.put("total", caseMapper.selectCount(caseQueryWrapper));
         } else{
-            caseMap.put("error_message", "未找到对应case");
+            caseMap.put("error_message", "未找到对应病例");
         }
 
         return new JSONObject(caseMap);
@@ -183,7 +183,7 @@ public class CaseServiceImpl implements CaseService {
             caseMap.put("error_message", "success");
         }
         else{
-            caseMap.put("error_message", "get case by id fail");
+            caseMap.put("error_message", "未找到id对应的病例");
         }
         caseMap.put("case", illcase);
         caseMap.put("lab_item",labDTOList);
@@ -196,7 +196,7 @@ public class CaseServiceImpl implements CaseService {
         Map<String, Object> labMap = new HashMap<>();
         List<Lab> labList =labMapper.getAll();
         if(labList ==null){
-            labMap.put("error_message", "get all fail");
+            labMap.put("error_message", "获取病例列表失败");
         }
         else {
             labMap.put("error_message", "success");
@@ -211,7 +211,7 @@ public class CaseServiceImpl implements CaseService {
         Map<String, Object> medicineMap = new HashMap<>();
         List<Medicine> medicineList =medicineMapper.getAll();
         if(medicineList ==null){
-            medicineMap.put("error_message", "get all fail");
+            medicineMap.put("error_message", "获取药品失败");
         }
         else {
             medicineMap.put("error_message", "success");

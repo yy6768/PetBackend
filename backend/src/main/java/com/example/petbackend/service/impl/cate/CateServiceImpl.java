@@ -20,7 +20,7 @@ public class CateServiceImpl implements CateService {
         Map<String, Object> cateMap = new HashMap<>();
         List<Cate> cateList =cateMapper.getAll();
         if(cateList ==null){
-            cateMap.put("error_message", "get all fail");
+            cateMap.put("error_message", "获取病例种类失败");
         }
         else {
             cateMap.put("error_message", "success");
