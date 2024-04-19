@@ -63,6 +63,10 @@ public class WebSocketServer {
     private static DynamicExamScheduler dynamicExamScheduler;
 
 
+    @Autowired
+    public void setPaperQuestionMapper(PaperQuestionMapper paperQuestionMapper){
+        WebSocketServer.paperQuestionMapper = paperQuestionMapper;
+    }
 
     @Autowired
     public void setUserMapper(UserMapper userMapper) {
@@ -194,7 +198,7 @@ public class WebSocketServer {
         ExamRedisDTO examRedisDTO = (ExamRedisDTO) redisTemplate.opsForValue().get(key);
         int grade = 0;
         if (examRedisDTO != null) {
-            Map<Integer,String> answerMap = examRedisDTO.getAnswerMap();
+            Map<Integer,Integer> answerMap = examRedisDTO.getAnswerMap();
             QueryWrapper<PaperQuestion> questionQueryWrapper = new QueryWrapper<>();
             questionQueryWrapper.select("qid")
                     .eq("paper_id", exam.getPaperId())
@@ -202,6 +206,21 @@ public class WebSocketServer {
             List<Object> results = paperQuestionMapper.selectObjs(questionQueryWrapper);
             // 将 Object 类型的结果转换为 Integer 类型
             List<Integer> questionIds = results.stream().map(obj -> (Integer) obj).toList();
+            // 比较option和answer
+            for(Integer questionId : questionIds){
+                Question question = questionMapper.selectById(questionId);
+                int answer = question.getAnswer();
+                QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
+                paperQuestionQueryWrapper.eq("paper_id", exam.getPaperId()).eq("qid",question.getQid());
+                if(answer == answerMap.get(paperQuestionMapper.selectOne(paperQuestionQueryWrapper).getNum())){
+                    grade+=question.getMark();
+                }
+            }
+            QueryWrapper<ExamUser> examUserQueryWrapper = new QueryWrapper<>();
+            examUserQueryWrapper.eq("exam_id", exam.getExamId()).eq("uid", user.getUid());
+            ExamUser examUser = examUserMapper.selectOne(examUserQueryWrapper);
+            examUser.setGrade(grade);
+            examUserMapper.updateById(examUser);
 
         }
 
@@ -217,7 +236,7 @@ public class WebSocketServer {
         ExamRedisDTO examRedisDTO = (ExamRedisDTO) WebSocketServer.redisTemplate.opsForValue().get("eu_id_" + euId);
         //更新此DTO的数据
         if(examRedisDTO != null) {
-            examRedisDTO.getAnswerMap().put(Integer.valueOf(num), option);
+            examRedisDTO.getAnswerMap().put(Integer.valueOf(num), Integer.valueOf(option));
             WebSocketServer.redisTemplate.opsForValue().set("eu_id_" + euId, examRedisDTO);
             //向前端发送信息，表明已将答案存入缓存
             sendMessage("New answer stored in answerMap for EU_ID: " + euId);
