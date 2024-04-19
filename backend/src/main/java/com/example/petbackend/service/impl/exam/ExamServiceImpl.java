@@ -3,8 +3,10 @@ package com.example.petbackend.service.impl.exam;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.petbackend.mapper.ExamMapper;
 import com.example.petbackend.mapper.ExamUserMapper;
+import com.example.petbackend.mapper.PaperMapper;
 import com.example.petbackend.pojo.Exam;
 import com.example.petbackend.pojo.ExamUser;
+import com.example.petbackend.pojo.Paper;
 import com.example.petbackend.service.exam.ExamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ public class ExamServiceImpl implements ExamService {
     ExamMapper examMapper;
     @Autowired
     ExamUserMapper examUserMapper;
+    @Autowired
+    PaperMapper paperMapper;
 
     //添加一个考试
     @Override
@@ -55,14 +59,16 @@ public class ExamServiceImpl implements ExamService {
     }
 
     //修改一个考试
-    public Map<String, String> updateExam(Integer exam_id, String exam_name,
-                                   Integer paper_id, LocalDateTime begin_time, List<Integer> user_list){
-        Exam exam = examMapper.selectById(exam_id);
+    public Map<String, String> updateExam(Integer exam_id, String exam_name, List<Integer> user_list){
         Map<String, String> examMap = new HashMap<>();
+        Exam exam = examMapper.selectById(exam_id);
+        //查找exam的开始时间
+        if(LocalDateTime.now().isAfter(exam.getBeginTime())){
+            examMap.put("error_msg", "考试已经开始，无法再进行修改");
+            return examMap;
+        }
         if(exam != null){
             exam.setExamName(exam_name);
-            exam.setPaperId(paper_id);
-            exam.setBeginTime(begin_time);
             int res = examMapper.updateById(exam);
             //把考试-用户表相关的记录更新
             QueryWrapper<ExamUser> examUserQueryWrapper = new QueryWrapper<>();

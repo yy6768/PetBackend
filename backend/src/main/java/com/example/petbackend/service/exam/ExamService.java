@@ -10,6 +10,5 @@ public interface ExamService {
     //删除一个考试
     Map<String, String> deleteExam(Integer exam_id);
     //修改一个考试
-    Map<String, String> updateExam(Integer exam_id, String exam_name,
-                                   Integer paper_id, LocalDateTime begin_time, List<Integer> user_list);
+    Map<String, String> updateExam(Integer exam_id, String exam_name, List<Integer> user_list);
 }

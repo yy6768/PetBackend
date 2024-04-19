@@ -106,12 +106,15 @@ public class GetExamServiceImpl implements GetExamService {
             QueryWrapper<ExamUser> examUserQueryWrapper = new QueryWrapper<>();
             examUserQueryWrapper.eq("exam_id", exam.getExamId());
             List<ExamUser> examUserList = examUserMapper.selectList(examUserQueryWrapper);
-            List<String> userList = new ArrayList<>();
+            List<String> userNames = new ArrayList<>(); //考生名字的列表
+            List<Integer> userIds = new ArrayList<>();  //考生id列表
             for(ExamUser examUser: examUserList){
                 User user1 = userMapper.selectById(examUser.getUid());
-                userList.add(user1.getUsername());
+                userNames.add(user1.getUsername());
+                userIds.add(user1.getUid());
             }
-            examMap.put("userList", userList);
+            examMap.put("userIds", userIds);
+            examMap.put("userNames", userNames);
         }
         else{  //没有搜到对应考试
             examMap.put("error_msg", "未找到对应考试");
