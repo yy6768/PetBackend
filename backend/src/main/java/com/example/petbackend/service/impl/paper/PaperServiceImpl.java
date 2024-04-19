@@ -50,57 +50,68 @@ public class PaperServiceImpl implements PaperService {
     //删除试卷，级联删除考试以及exam_user表的相关记录
     @Override
     public Map<String, String> deletePaper(Integer paper_id){
-        //删除exam表以及exam_user表的级联数据
+        Map<String, String> paperMap = new HashMap<>();
+        //删除paper表首先判断是否已经绑定考试
         QueryWrapper<Exam> examQueryWrapper = new QueryWrapper<>();
         examQueryWrapper.eq("paper_id", paper_id);
         List<Exam> examList = examMapper.selectList(examQueryWrapper);
-        for(Exam exam: examList){
-            QueryWrapper<ExamUser> examUserQueryWrapper = new QueryWrapper<>();
-            examUserQueryWrapper.eq("exam_id", exam.getExamId());
-            examUserMapper.delete(examUserQueryWrapper);
-            examMapper.deleteById(exam);
+        if((examList != null) && !examList.isEmpty()){
+            paperMap.put("error_msg", "此试卷已绑定某考试，无法删除");
+            return paperMap;
+        }
+        else{  //可以删除
+            QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
+            paperQuestionQueryWrapper.eq("paper_id", paper_id);
+            paperQuestionMapper.delete(paperQuestionQueryWrapper);
+            int res = paperMapper.deleteById(paper_id);
+            if(res<1){
+                paperMap.put("error_message", "delete fail");
+            }
+            else{
+                paperMap.put("error_message", "success");
+            }
+            return paperMap;
         }
 
-        QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
-        paperQuestionQueryWrapper.eq("paper_id", paper_id);
-        paperQuestionMapper.delete(paperQuestionQueryWrapper);
-        int res = paperMapper.deleteById(paper_id);
-        Map<String, String> paperMap = new HashMap<>();
-        if(res<1){
-            paperMap.put("error_message", "delete fail");
-        }
-        else{
-            paperMap.put("error_message", "success");
-        }
-        return paperMap;
     }
 
     //修改试卷
     @Override
     public Map<String, String> updatePaper(Integer uid, Integer paper_id, String paper_name, Integer time, List<Integer> question_list){
         Paper paper = paperMapper.selectById(paper_id);
-        int auth = paper.getUid();
         Map<String, String> paperMap = new HashMap<>();
-        if(uid != auth){
-            paperMap.put("error_message", "不是试卷创始人无法修改试卷");
+        //首先判断是否已经绑定考试，如果已经绑定考试则无法改动试卷
+        QueryWrapper<Exam> examQueryWrapper = new QueryWrapper<>();
+        examQueryWrapper.eq("paper_id", paper_id);
+        List<Exam> examList = examMapper.selectList(examQueryWrapper);
+        if((examList != null) && !examList.isEmpty()){
+            paperMap.put("error_msg", "此试卷已绑定某考试，无法修改");
+            return paperMap;
         }
-        else {
-            paper.setPaperName(paper_name);
-            paper.setTime(time);
-            int res = paperMapper.updateById(paper);
-            //把原来的paper_question表里相关的记录删掉
-            QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
-            paperQuestionQueryWrapper.eq("paper_id", paper_id);
-            paperQuestionMapper.delete(paperQuestionQueryWrapper);
-            // 把新的题目列表插进去
-            for (int i = 0; i < question_list.size(); i++) {
-                PaperQuestion paperQuestion = new PaperQuestion(paper_id, question_list.get(i), i + 1);
-                paperQuestionMapper.insert(paperQuestion);
+        else{
+            int auth = paper.getUid();
+            if(uid != auth){
+                paperMap.put("error_message", "不是试卷创始人无法修改试卷");
             }
-            paperMap.put("error_message", "success");
+            else {
+                paper.setPaperName(paper_name);
+                paper.setTime(time);
+                int res = paperMapper.updateById(paper);
+                //把原来的paper_question表里相关的记录删掉
+                QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
+                paperQuestionQueryWrapper.eq("paper_id", paper_id);
+                paperQuestionMapper.delete(paperQuestionQueryWrapper);
+                // 把新的题目列表插进去
+                for (int i = 0; i < question_list.size(); i++) {
+                    PaperQuestion paperQuestion = new PaperQuestion(paper_id, question_list.get(i), i + 1);
+                    paperQuestionMapper.insert(paperQuestion);
+                }
+                paperMap.put("error_message", "success");
 
+            }
+            return paperMap;
         }
-        return paperMap;
+
 
     }
 }
