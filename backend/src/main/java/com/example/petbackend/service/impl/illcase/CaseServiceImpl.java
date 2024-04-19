@@ -1,26 +1,21 @@
 package com.example.petbackend.service.impl.illcase;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.petbackend.dto.IllcaseDTO;
+import com.alibaba.fastjson2.JSON;
 import com.example.petbackend.dto.LabDTO;
 import com.example.petbackend.dto.MedicineDTO;
 import com.example.petbackend.mapper.*;
 import com.example.petbackend.pojo.*;
 import com.example.petbackend.service.illcase.CaseService;
-import org.apache.http.HttpHost;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.elasticsearch.action.search.SearchResponse;
@@ -50,6 +45,8 @@ public class CaseServiceImpl implements CaseService {
     private CaseMedicineMapper caseMedicineMapper;
     @Autowired
     private CaseLabMapper caseLabMapper;
+    @Autowired
+    private RestHighLevelClient client;
 
     @Override
     public Map<String, String> addCase(String username, String ill_name, LocalDateTime date,
@@ -64,6 +61,24 @@ public class CaseServiceImpl implements CaseService {
         else{
             Illcase illcase = new Illcase(user.getUid(), ill.getIllId(), date,basic_situation,photo,result,therapy,surgery_video);
             caseMapper.insert(illcase);
+
+            try{
+                IllcaseDoc illcaseDoc = new IllcaseDoc();
+                illcaseDoc.setCid(illcase.getCid());
+                illcaseDoc.setUsername(username);
+                illcaseDoc.setCateName(cateMapper.selectById(illMapper.selectById(illcase.getIllId()).getCateId()).getCateName());
+                illcaseDoc.setIllName(ill_name);
+                illcaseDoc.setResult(result);
+                illcaseDoc.setTherapy(therapy);
+                illcaseDoc.setBasicSituation(basic_situation);
+
+                IndexRequest request = new IndexRequest("illcase").id(illcase.getCid().toString());
+                request.source(com.alibaba.fastjson.JSON.toJSONString(illcaseDoc), XContentType.JSON);
+                client.index(request, RequestOptions.DEFAULT);
+            }catch (IOException e){
+                throw new RuntimeException(e);
+            }
+
             caseMap.put("error_message", "success");
             caseMap.put("cid", String.valueOf(illcase.getCid()));
         }
@@ -97,6 +112,17 @@ public class CaseServiceImpl implements CaseService {
         }
         else{
             caseMap.put("error_message", "success");
+            try{
+                UpdateRequest request = new UpdateRequest("illcase", cid.toString());
+                request.doc(
+                        "basicSituation",basic_situation,
+                        "result", result,
+                        "therapy", therapy
+                );
+                client.update(request, RequestOptions.DEFAULT);
+            }catch (IOException e){
+                throw new RuntimeException(e);
+            }
         }
         return caseMap;
     }
@@ -118,46 +144,88 @@ public class CaseServiceImpl implements CaseService {
         }
         else{
             caseMap.put("error_message", "success");
+            try{
+                DeleteRequest request = new DeleteRequest("illcase", cid.toString());
+                client.delete(request, RequestOptions.DEFAULT);
+            }catch (IOException e){
+                throw new RuntimeException(e);
+            }
         }
         return caseMap;
     }
 
+//    @Override
+//    public Map<String, Object> getAllCase(Integer page, Integer pageSize,String search) {
+//        List<Illcase> illcases = caseMapper.selectBySearch(search);
+//        List<Integer> illCaseIdList = new ArrayList<>();
+//        for (Illcase illcase : illcases) {
+//            illCaseIdList.add(illcase.getCid());
+//        }
+//        IPage<Illcase> casePage = new Page<>(page, pageSize);
+//        QueryWrapper<Illcase> caseQueryWrapper = new QueryWrapper<>();
+//        Map<String, Object> caseMap = new HashMap<>();
+//        casePage = caseMapper.selectPage(casePage, Wrappers.<Illcase>lambdaQuery()
+//                .in(Illcase::getCid, illCaseIdList));
+//        List<Illcase> illcaseList=casePage.getRecords();
+//        List<IllcaseDTO> illcaseDTOList =new ArrayList<>();
+//        for(Illcase illcase: illcaseList){
+//            Ill ill = illMapper.selectById(illcase.getIllId());
+//            Cate cate = cateMapper.selectById(ill.getCateId());
+//            User user=userMapper.selectById(illcase.getUid());
+//            IllcaseDTO illcaseDTO = new IllcaseDTO();
+//            illcaseDTO.setCid(illcase.getCid());
+//            illcaseDTO.setDate(illcase.getDate());
+//            illcaseDTO.setCate_name(cate.getCateName());
+//            illcaseDTO.setUsername(user.getUsername());
+//            illcaseDTO.setIll_name(ill.getIllName());
+//            illcaseDTOList.add(illcaseDTO);
+//        }
+//        if(!illcaseDTOList.isEmpty()) {
+//            caseMap.put("error_message", "success");
+//            caseMap.put("case_list", illcaseDTOList);
+//            caseMap.put("total", caseMapper.selectCount(caseQueryWrapper));
+//        } else{
+//            caseMap.put("error_message", "未找到对应病例");
+//        }
+//
+//        return new JSONObject(caseMap);
+//
+//    }
+
     @Override
     public Map<String, Object> getAllCase(Integer page, Integer pageSize,String search) {
-        List<Illcase> illcases = caseMapper.selectBySearch(search);
-        List<Integer> illCaseIdList = new ArrayList<>();
-        for (Illcase illcase : illcases) {
-            illCaseIdList.add(illcase.getCid());
-        }
-        IPage<Illcase> casePage = new Page<>(page, pageSize);
-        QueryWrapper<Illcase> caseQueryWrapper = new QueryWrapper<>();
-        Map<String, Object> caseMap = new HashMap<>();
-        casePage = caseMapper.selectPage(casePage, Wrappers.<Illcase>lambdaQuery()
-                .in(Illcase::getCid, illCaseIdList));
-        List<Illcase> illcaseList=casePage.getRecords();
-        List<IllcaseDTO> illcaseDTOList =new ArrayList<>();
-        for(Illcase illcase: illcaseList){
-            Ill ill = illMapper.selectById(illcase.getIllId());
-            Cate cate = cateMapper.selectById(ill.getCateId());
-            User user=userMapper.selectById(illcase.getUid());
-            IllcaseDTO illcaseDTO = new IllcaseDTO();
-            illcaseDTO.setCid(illcase.getCid());
-            illcaseDTO.setDate(illcase.getDate());
-            illcaseDTO.setCate_name(cate.getCateName());
-            illcaseDTO.setUsername(user.getUsername());
-            illcaseDTO.setIll_name(ill.getIllName());
-            illcaseDTOList.add(illcaseDTO);
-        }
-        if(!illcaseDTOList.isEmpty()) {
+        try{
+            SearchRequest request = new SearchRequest("illcase");
+            if (search == null || "".equals(search)) {
+                request.source().query(QueryBuilders.matchAllQuery());
+            } else {
+                request.source().query(QueryBuilders.matchQuery("all", search));
+            }
+
+            request.source().from((page - 1) * pageSize).size(pageSize);
+            SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+            SearchHits searchHits = response.getHits();
+            long total = searchHits.getTotalHits().value;
+            System.out.println("共搜索到" + total + "条数据");
+            SearchHit[] hits = searchHits.getHits();
+            List<IllcaseDoc> illcaseDocList=new ArrayList<>();
+            for (SearchHit hit : hits) {
+                String json = hit.getSourceAsString();
+                IllcaseDoc illcaseDoc = JSON.parseObject(json, IllcaseDoc.class);
+                illcaseDocList.add(illcaseDoc);
+            }
+            Map<String, Object> caseMap = new HashMap<>();
+            if(!illcaseDocList.isEmpty()) {
             caseMap.put("error_message", "success");
-            caseMap.put("case_list", illcaseDTOList);
-            caseMap.put("total", caseMapper.selectCount(caseQueryWrapper));
+            caseMap.put("case_list", illcaseDocList);
+            caseMap.put("total", total);
         } else{
             caseMap.put("error_message", "未找到对应病例");
         }
-
-        return new JSONObject(caseMap);
-
+            return caseMap;
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -221,75 +289,4 @@ public class CaseServiceImpl implements CaseService {
         return new JSONObject(medicineMap);
     }
 
-    public SearchResponse search(String indexName, String queryString) throws IOException {
-        RestHighLevelClient client = new RestHighLevelClient(
-                RestClient.builder(new HttpHost("localhost", 9200, "http")));
-        SearchRequest searchRequest = new SearchRequest(indexName);
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(QueryBuilders.matchQuery("basic_situation", queryString));
-        searchRequest.source(searchSourceBuilder);
-        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
-        // 处理搜索结果...
-        return searchResponse;
-    }
-
-    @Override
-    public boolean createIllcaseIndex(String index) throws IOException {
-        RestHighLevelClient client = new RestHighLevelClient(
-                RestClient.builder(new HttpHost("localhost", 9200, "http")));
-        CreateIndexRequest createIndexRequest = new CreateIndexRequest(index);
-        createIndexRequest.settings(Settings.builder()
-                .put("index.number_of_shards", 1)
-                .put("index.number_of_replicas", 0)
-        );
-        createIndexRequest.mapping("{\n" +
-                "  \"properties\": {\n" +
-                "    \"cid\": {\n" +
-                "      \"type\": \"integer\"\n" +
-                "    },\n" +
-                "    \"username\": {\n" +
-                "      \"type\": \"string\"\n" +
-                "    },\n" +
-                "    \"ill_name\": {\n" +
-                "      \"type\": \"string\"\n" +
-                "    },\n" +
-                "    \"date\": {\n" +
-                "      \"type\": \"date\"\n" +
-                "    },\n" +
-                "    \"basic_situation\": {\n" +
-                "      \"type\": \"string\"\n" +
-                "    },\n" +
-                "    \"photo\": {\n" +
-                "      \"type\": \"string\"\n" +
-                "    },\n" +
-                "    \"result\": {\n" +
-                "      \"type\": \"string\"\n" +
-                "    },\n" +
-                "    \"therapy\": {\n" +
-                "      \"type\": \"string\"\n" +
-                "    },\n" +
-                "    \"surgery_video\": {\n" +
-                "      \"type\": \"string\"\n" +
-                "    },\n" +
-                "  }\n" +
-                "}", XContentType.JSON);
-
-        try {
-            CreateIndexResponse createIndexResponse = client.indices().create(createIndexRequest, RequestOptions.DEFAULT);
-            return createIndexResponse.isAcknowledged();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        } finally {
-            // 不要忘记关闭client连接
-            try {
-                client.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-//        CreateIndexResponse createIndexResponse = client.indices().create(createIndexRequest, RequestOptions.DEFAULT);
-//        return createIndexResponse.isAcknowledged();
-
-    }
 }
