@@ -27,7 +27,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         // 1.Get url prefix
         String prefix = getPrefixByFileType(file.getContentType(), file.getOriginalFilename());
         if (prefix.isEmpty()) {
-            results.put("error_message", "File Type is empty");
+            results.put("error_message", "文件类型解析失败");
             return results;
         }
         // 2. Relative file name
