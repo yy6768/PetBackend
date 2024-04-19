@@ -40,7 +40,7 @@ public class GetPaperServiceImpl implements GetPaperService {
         Paper paper = paperMapper.selectById(paper_id);
         Map<String, Object> paperMap = new HashMap<>();
         if(paper != null){
-            paperMap.put("error_msg", "success");
+            paperMap.put("error_msg", "查询成功");
             paperMap.put("paperId", paper.getPaperId());
             paperMap.put("paperName", paper.getPaperName());
             paperMap.put("time", paper.getTime());
@@ -128,7 +128,7 @@ public class GetPaperServiceImpl implements GetPaperService {
         }
         Map<String, Object> paperMap = new HashMap<>();
         if(paperDTOList != null && !paperDTOList.isEmpty()){
-            paperMap.put("error_msg", "success");
+            paperMap.put("error_msg", "查询成功");
             paperMap.put("paper_list", paperDTOList);
             paperMap.put("total", total);
         } else{

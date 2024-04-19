@@ -55,7 +55,7 @@ public class QuestionServiceImpl implements QuestionService {
         questionDTO.setContentC(content_c);
         questionDTO.setContentD(content_d);
         Map<String, Object> questionMap = new HashMap<>();
-        questionMap.put("error_message", "success");
+        questionMap.put("error_message", "添加成功");
         questionMap.put("question", questionDTO);
         return questionMap;
     }
@@ -96,31 +96,37 @@ public class QuestionServiceImpl implements QuestionService {
         questionDTO.setContentD(question.getContentD());
         Map<String, Object> questionMap = new HashMap<>();
         if(res < 1){
-            questionMap.put("error_message", "update fail");
+            questionMap.put("error_message", "数据库中未找到对应题目，修改失败");
         } else{
-            questionMap.put("error_message", "success");
+            questionMap.put("error_message", "修改成功");
             questionMap.put("question", questionDTO);
         }
         return questionMap;
     }
 
-    //删除题目，级联删除，要删除paper_question中的相关记录
+    //删除题目
     @Override
     public Map<String, String> deleteQuestion(Integer qid){
-        //级联
+        //判断如果已经在一个试卷中，则无法删除
+        Map<String, String> questionMap = new HashMap<>();
         QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
         paperQuestionQueryWrapper.eq("qid", qid);
-        paperQuestionMapper.delete(paperQuestionQueryWrapper);
-
-        int res = questionMapper.deleteById(qid);
-
-        Map<String, String> questionMap = new HashMap<>();
-        if(res < 1){
-            questionMap.put("error_message", "delete fail");
-        } else{
-            questionMap.put("error_message", "success");
+        PaperQuestion result = paperQuestionMapper.selectOne(paperQuestionQueryWrapper);
+        if( result != null){
+            questionMap.put("error_msg", "此题目已被添加到某试卷中，无法删除");
+            return questionMap;
         }
-        return questionMap;
+        else{
+            int res = questionMapper.deleteById(qid);
+            if(res < 1){
+                questionMap.put("error_message", "数据库中未找到对应题目，删除失败");
+            } else{
+                questionMap.put("error_message", "删除成功");
+            }
+            return questionMap;
+        }
+
+
     }
 
 

@@ -31,7 +31,7 @@ public class MedicineServiceImpl implements MedicineService {
         Medicine medicine = new Medicine(null, medicine_name, medicine_cost, description);
         medicineMapper.insert(medicine);
         Map<String,String> medicineMap=new HashMap<>();
-        medicineMap.put("error_message", "success");
+        medicineMap.put("error_message", "添加成功");
         medicineMap.put("medicine_id", String.valueOf(medicine.getMedicineId()));
         return medicineMap;
     }
@@ -49,9 +49,9 @@ public class MedicineServiceImpl implements MedicineService {
         Map<String, String> medicineMap = new HashMap<>();
         String msg;
         if (res < 1) {
-            msg = "updatefail";
+            msg = "数据库中未找到对应药品，修改失败";
         } else {
-            msg = "success";
+            msg = "修改成功";
         }
         medicineMap.put("error_message", msg);
         return medicineMap;
@@ -66,10 +66,10 @@ public class MedicineServiceImpl implements MedicineService {
 
         Map<String,String> medicineMap=new HashMap<>();
         if(result < 1||res<1){
-            medicineMap.put("error_message", "delete fail");
+            medicineMap.put("error_message", "数据库中未找到对应药品，删除失败");
         }
         else{
-            medicineMap.put("error_message", "success");
+            medicineMap.put("error_message", "删除成功");
         }
         return medicineMap;
     }
@@ -86,7 +86,7 @@ public class MedicineServiceImpl implements MedicineService {
         long total = medicineMapper.selectCount(medicineQueryWrapper);
         Map<String, Object> medicineMap = new HashMap<>();
         if(medicineList !=null && !medicineList.isEmpty()) { //搜到的药品列表不为空
-            medicineMap.put("error_message", "success");
+            medicineMap.put("error_message", "查询成功");
             medicineMap.put("medicine_list", medicineList);
             medicineMap.put("total", total); // 添加记录总数
         } else{

@@ -42,12 +42,12 @@ public class PaperServiceImpl implements PaperService {
             paperQuestionMapper.insert(paperQuestion);
         }
         Map<String, String> paperMap = new HashMap<>();
-        paperMap.put("error_message", "success");
+        paperMap.put("error_message", "添加成功");
         paperMap.put("paper_id", String.valueOf(paper_id));
         return paperMap;
     }
 
-    //删除试卷，级联删除考试以及exam_user表的相关记录
+    //删除试卷
     @Override
     public Map<String, String> deletePaper(Integer paper_id){
         Map<String, String> paperMap = new HashMap<>();
@@ -65,10 +65,10 @@ public class PaperServiceImpl implements PaperService {
             paperQuestionMapper.delete(paperQuestionQueryWrapper);
             int res = paperMapper.deleteById(paper_id);
             if(res<1){
-                paperMap.put("error_message", "delete fail");
+                paperMap.put("error_message", "数据库中未找到对应试卷，删除失败");
             }
             else{
-                paperMap.put("error_message", "success");
+                paperMap.put("error_message", "删除成功");
             }
             return paperMap;
         }
@@ -106,7 +106,7 @@ public class PaperServiceImpl implements PaperService {
                     PaperQuestion paperQuestion = new PaperQuestion(paper_id, question_list.get(i), i + 1);
                     paperQuestionMapper.insert(paperQuestion);
                 }
-                paperMap.put("error_message", "success");
+                paperMap.put("error_message", "修改成功");
 
             }
             return paperMap;

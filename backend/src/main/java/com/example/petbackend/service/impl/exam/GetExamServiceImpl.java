@@ -83,7 +83,7 @@ public class GetExamServiceImpl implements GetExamService {
             examDTOList.add(examDTO);
         }
         if(!examDTOList.isEmpty()){
-            examMap.put("error_msg", "success");
+            examMap.put("error_msg", "查询成功");
             examMap.put("total", total);
             examMap.put("exam_list", examDTOList);
         }else{
@@ -167,7 +167,7 @@ public class GetExamServiceImpl implements GetExamService {
         //返回
         Map<String, Object> examMap = new HashMap<>();
         if(!examUserDTOList.isEmpty()){
-            examMap.put("error_msg", "success");
+            examMap.put("error_msg", "查询成功");
             examMap.put("exam_list", pageList);
             examMap.put("total", totalSize);
         } else{
