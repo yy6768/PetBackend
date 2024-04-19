@@ -23,8 +23,4 @@ public interface CaseService {
     Map<String, Object> getAllLab();
 
     Map<String, Object> getAllMedicine();
-
-    boolean createIllcaseIndex(String index) throws IOException;
-
-    SearchResponse search(String indexName, String queryString) throws IOException;
 }
