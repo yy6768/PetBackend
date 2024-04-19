@@ -37,7 +37,7 @@ public class ExamServiceImpl implements ExamService {
             examUserMapper.insert(examUser);
         }
         Map<String, String> examMap= new HashMap<>();
-        examMap.put("error_msg", "success");
+        examMap.put("error_msg", "添加成功");
         examMap.put("exam_id", String.valueOf(exam_id));
         return examMap;
     }
@@ -50,10 +50,10 @@ public class ExamServiceImpl implements ExamService {
         int res = examMapper.deleteById(exam_id);
         Map<String, String> examMap = new HashMap<>();
         if(res<1){
-            examMap.put("error_message", "delete fail");
+            examMap.put("error_message", "数据库中未找到此考试，删除失败");
         }
         else{
-            examMap.put("error_message", "success");
+            examMap.put("error_message", "删除成功");
         }
         return examMap;
     }
@@ -78,9 +78,9 @@ public class ExamServiceImpl implements ExamService {
                 ExamUser examUser = new ExamUser(exam_id, user_list.get(i), null);
                 examUserMapper.insert(examUser);
             }
-            examMap.put("error_msg", "success");
+            examMap.put("error_msg", "修改成功");
         }else{
-            examMap.put("error_msg", "delete fail");
+            examMap.put("error_msg", "数据库中未找到此考试，修改失败");
         }
         return examMap;
     }
