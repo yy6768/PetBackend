@@ -1,15 +1,10 @@
 package com.example.petbackend.consumer;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.petbackend.consumer.utils.DynamicExamScheduler;
 import com.example.petbackend.dto.ExamRedisDTO;
-import com.example.petbackend.mapper.ExamMapper;
-import com.example.petbackend.mapper.ExamUserMapper;
-import com.example.petbackend.mapper.PaperMapper;
-import com.example.petbackend.mapper.UserMapper;
-import com.example.petbackend.pojo.Exam;
-import com.example.petbackend.pojo.ExamUser;
-import com.example.petbackend.pojo.Paper;
-import com.example.petbackend.pojo.User;
+import com.example.petbackend.mapper.*;
+import com.example.petbackend.pojo.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.websocket.*;
@@ -27,7 +22,10 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 
 /**
@@ -55,6 +53,10 @@ public class WebSocketServer {
     public static ExamUserMapper examUserMapper;
 
     public static PaperMapper paperMapper;
+
+    public static PaperQuestionMapper paperQuestionMapper;
+
+    public static QuestionMapper questionMapper;
 
     private static RedisTemplate<String, Object> redisTemplate;
 
@@ -88,6 +90,11 @@ public class WebSocketServer {
     @Autowired
     public void setDynamicExamScheduler(DynamicExamScheduler dynamicExamScheduler) {
         WebSocketServer.dynamicExamScheduler = dynamicExamScheduler;
+    }
+
+    @Autowired
+    public void setQuestionMapper(QuestionMapper questionMapper) {
+        WebSocketServer.questionMapper = questionMapper;
     }
 
     /**
@@ -174,16 +181,32 @@ public class WebSocketServer {
 
 
 
-
-
     /**
      * 处理上交试卷
      * 1. 通知前端考试结束
      * 2. 从redis中取出
      */
     public void endExam() {
+        // 通知前端
         sendMessage("endExam");
+        // 从Redis中取出数据
+        String key = "eu_id_" + euId;
+        ExamRedisDTO examRedisDTO = (ExamRedisDTO) redisTemplate.opsForValue().get(key);
+        int grade = 0;
+        if (examRedisDTO != null) {
+            Map<Integer,String> answerMap = examRedisDTO.getAnswerMap();
+            QueryWrapper<PaperQuestion> questionQueryWrapper = new QueryWrapper<>();
+            questionQueryWrapper.select("qid")
+                    .eq("paper_id", exam.getPaperId())
+                    .in("num", answerMap.keySet());
+            List<Object> results = paperQuestionMapper.selectObjs(questionQueryWrapper);
+            // 将 Object 类型的结果转换为 Integer 类型
+            List<Integer> questionIds = results.stream().map(obj -> (Integer) obj).toList();
 
+        }
+
+        ExamUser examUser = examUserMapper.selectById(euId);
+        examUser.setGrade(grade);
     }
 
     /**
@@ -194,13 +217,12 @@ public class WebSocketServer {
         ExamRedisDTO examRedisDTO = (ExamRedisDTO) WebSocketServer.redisTemplate.opsForValue().get("eu_id_" + euId);
         //更新此DTO的数据
         if(examRedisDTO != null) {
-            examRedisDTO.getAnswerMap().put(num, option);
+            examRedisDTO.getAnswerMap().put(Integer.valueOf(num), option);
             WebSocketServer.redisTemplate.opsForValue().set("eu_id_" + euId, examRedisDTO);
             //向前端发送信息，表明已将答案存入缓存
             sendMessage("New answer stored in answerMap for EU_ID: " + euId);
         }
     }
-
 
 
     //开启连接

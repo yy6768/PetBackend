@@ -18,6 +18,6 @@ public class ExamRedisDTO {
     private Integer uid;
     private Integer examId;
     private Timestamp time;  //考试时间
-    private Map<String, String> answerMap; //题号-答案
+    private Map<Integer, String> answerMap; //题号-答案
 
 }
