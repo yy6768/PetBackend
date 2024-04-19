@@ -1,16 +1,15 @@
 package com.example.petbackend.controller.illcase;
 
-import com.example.petbackend.service.illcase.*;
-import org.elasticsearch.action.search.SearchResponse;
+import com.example.petbackend.service.illcase.CaseService;
+import com.example.petbackend.service.illcase.GetCaseService;
+import com.example.petbackend.service.illcase.SortCaseService;
+import com.example.petbackend.service.illcase.UpdateCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Map;
 
 @RestController
