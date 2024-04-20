@@ -3,7 +3,6 @@ package com.example.petbackend.consumer;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.petbackend.consumer.utils.DynamicExamScheduler;
 import com.example.petbackend.dto.ExamRedisDTO;
-import com.example.petbackend.dto.QuestionOfExamDTO;
 import com.example.petbackend.mapper.*;
 import com.example.petbackend.pojo.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -208,9 +207,10 @@ public class WebSocketServer {
             questionQueryWrapper.select("num","qid")
                     .eq("paper_id", exam.getPaperId())
                     .in("num", answerMap.keySet());
-            List<QuestionOfExamDTO> results = paperQuestionMapper.selectObjs(questionQueryWrapper);
+            List<PaperQuestion> results = paperQuestionMapper.selectList(questionQueryWrapper);
+
             // 将 Object 类型的结果转换为 Integer 类型
-            Map<Integer, Integer> questions = results.stream().collect(Collectors.toMap(QuestionOfExamDTO::getNum, QuestionOfExamDTO::getQid));
+            Map<Integer, Integer> questions = results.stream().collect(Collectors.toMap(PaperQuestion::getNum, PaperQuestion::getQid));
             // 比较option和answer
             for(Integer questionNum : questions.keySet()){
                 Question question = questionMapper.selectById(questions.get(questionNum));
