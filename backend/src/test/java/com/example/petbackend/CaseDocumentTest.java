@@ -39,13 +39,13 @@ import static com.example.petbackend.constants.CaseConstants.MAPPING_TEMPLATE;
 
 @SpringBootTest
 public class CaseDocumentTest {
-    @MockBean
+    @Autowired
     private CaseMapper caseMapper;
-    @MockBean
+    @Autowired
     private UserMapper userMapper;
-    @MockBean
+    @Autowired
     private CateMapper cateMapper;
-    @MockBean
+    @Autowired
     private IllMapper illMapper;
     @MockBean
     private ServerEndpointExporter serverEndpointExporter;
@@ -99,6 +99,7 @@ public class CaseDocumentTest {
     @Test
     void testBulkRequest() throws IOException {
         List<Illcase> illcases = caseMapper.getAll();
+        System.out.println(illcases.size());
         BulkRequest request = new BulkRequest();
         for (Illcase illcase : illcases) {
             IllcaseDoc illcaseDoc = new IllcaseDoc();
@@ -119,7 +120,7 @@ public class CaseDocumentTest {
     @BeforeEach
     void setUp(){
         this.client=new RestHighLevelClient(RestClient.builder(
-                HttpHost.create("http://localhost:9200")
+                HttpHost.create("http://124.223.161.233:9200")
         ));
     }
 

@@ -9,6 +9,7 @@ import com.example.petbackend.pojo.*;
 import com.example.petbackend.service.illcase.CaseService;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -74,7 +75,9 @@ public class CaseServiceImpl implements CaseService {
 
                 IndexRequest request = new IndexRequest("illcase").id(illcase.getCid().toString());
                 request.source(com.alibaba.fastjson.JSON.toJSONString(illcaseDoc), XContentType.JSON);
-                client.index(request, RequestOptions.DEFAULT);
+                IndexResponse response = client.index(request, RequestOptions.DEFAULT);
+                System.out.println(response.toString());
+
             }catch (IOException e){
                 throw new RuntimeException(e);
             }
