@@ -11,6 +11,7 @@ import com.example.petbackend.service.illcase.CaseService;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
@@ -116,7 +117,8 @@ public class CaseDocumentTest {
                     .id(illcaseDoc.getCid().toString())
                     .source(JSON.toJSONString(illcaseDoc),XContentType.JSON));
         }
-        client.bulk(request,RequestOptions.DEFAULT);
+        BulkResponse bulkResponse =  client.bulk(request,RequestOptions.DEFAULT);
+        System.out.println(bulkResponse.buildFailureMessage());
     }
 
     @BeforeEach

@@ -28,6 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 
+
+
 /**
  * 前后端建立连接通信
  * 发送消息，后端实时判断信息并完成渲染
@@ -192,7 +194,9 @@ public class WebSocketServer {
      */
     public void endExam() {
         // 通知前端
-        sendMessage("endExam");
+        if (session.isOpen()) {
+            sendMessage("endExam");
+        }
         // 从Redis中取出数据
         String key = "eu_id_" + euId;
         ExamRedisDTO examRedisDTO = (ExamRedisDTO) redisTemplate.opsForValue().get(key);
@@ -200,19 +204,19 @@ public class WebSocketServer {
         if (examRedisDTO != null) {
             Map<Integer,Integer> answerMap = examRedisDTO.getAnswerMap();
             QueryWrapper<PaperQuestion> questionQueryWrapper = new QueryWrapper<>();
-            questionQueryWrapper.select("qid")
+            questionQueryWrapper.select("num","qid")
                     .eq("paper_id", exam.getPaperId())
                     .in("num", answerMap.keySet());
-            List<Object> results = paperQuestionMapper.selectObjs(questionQueryWrapper);
+            List<PaperQuestion> results = paperQuestionMapper.selectList(questionQueryWrapper);
+
             // 将 Object 类型的结果转换为 Integer 类型
-            List<Integer> questionIds = results.stream().map(obj -> (Integer) obj).toList();
+            Map<Integer, Integer> questions = results.stream().collect(Collectors.toMap(PaperQuestion::getNum, PaperQuestion::getQid));
             // 比较option和answer
-            for(Integer questionId : questionIds){
-                Question question = questionMapper.selectById(questionId);
-                int answer = question.getAnswer();
-                QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
-                paperQuestionQueryWrapper.eq("paper_id", exam.getPaperId()).eq("qid",question.getQid());
-                if(answer == answerMap.get(paperQuestionMapper.selectOne(paperQuestionQueryWrapper).getNum())){
+            for(Integer questionNum : questions.keySet()){
+                Question question = questionMapper.selectById(questions.get(questionNum));
+                int stdAnswer = question.getAnswer();
+                int answer = answerMap.get(questionNum);
+                if(answer == stdAnswer){
                     grade+=question.getMark();
                 }
             }
