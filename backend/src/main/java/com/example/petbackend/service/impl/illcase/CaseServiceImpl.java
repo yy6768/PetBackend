@@ -69,6 +69,7 @@ public class CaseServiceImpl implements CaseService {
                 illcaseDoc.setUsername(username);
                 illcaseDoc.setCateName(cateMapper.selectById(illMapper.selectById(illcase.getIllId()).getCateId()).getCateName());
                 illcaseDoc.setIllName(ill_name);
+                illcaseDoc.setDate(date.toString());
                 illcaseDoc.setResult(result);
                 illcaseDoc.setTherapy(therapy);
                 illcaseDoc.setBasicSituation(basic_situation);

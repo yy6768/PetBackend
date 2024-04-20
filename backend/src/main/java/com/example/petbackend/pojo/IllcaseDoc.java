@@ -17,6 +17,7 @@ public class IllcaseDoc {
     private String username;
     private String cateName;
     private String illName;
+    private String date;
     private String basicSituation;
     private String result;
     private String therapy;
