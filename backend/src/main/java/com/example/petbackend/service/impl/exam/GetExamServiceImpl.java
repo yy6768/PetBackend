@@ -3,12 +3,13 @@ package com.example.petbackend.service.impl.exam;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.petbackend.dto.ExamDTO;
-import com.example.petbackend.dto.ExamUserDTO;
+import com.example.petbackend.consumer.WebSocketServer;
+import com.example.petbackend.dto.*;
 import com.example.petbackend.mapper.*;
 import com.example.petbackend.pojo.*;
 import com.example.petbackend.service.exam.GetExamService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,6 +33,10 @@ public class GetExamServiceImpl implements GetExamService {
     QuestionMapper questionMapper;
     @Autowired
     ExamUserMapper examUserMapper;
+
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
+
 
     //根据考试名搜索分页获取所有考试
     public Map<String, Object> getAllExamByName(Integer page, Integer pageSize, String key){
@@ -83,11 +88,11 @@ public class GetExamServiceImpl implements GetExamService {
             examDTOList.add(examDTO);
         }
         if(!examDTOList.isEmpty()){
-            examMap.put("error_msg", "查询成功");
+            examMap.put("error_message", "success");
             examMap.put("total", total);
             examMap.put("exam_list", examDTOList);
         }else{
-            examMap.put("error_msg", "未找到对应考试");
+            examMap.put("error_message", "未找到对应考试");
         }
         return examMap;
     }
@@ -117,7 +122,7 @@ public class GetExamServiceImpl implements GetExamService {
             examMap.put("userNames", userNames);
         }
         else{  //没有搜到对应考试
-            examMap.put("error_msg", "未找到对应考试");
+            examMap.put("error_message", "未找到对应考试");
         }
 
         return examMap;
@@ -167,13 +172,56 @@ public class GetExamServiceImpl implements GetExamService {
         //返回
         Map<String, Object> examMap = new HashMap<>();
         if(!examUserDTOList.isEmpty()){
-            examMap.put("error_msg", "查询成功");
+            examMap.put("error_message", "success");
             examMap.put("exam_list", pageList);
             examMap.put("total", totalSize);
         } else{
-            examMap.put("error_msg", "考生没有可参与的考试");
+            examMap.put("error_message", "考生没有可参与的考试");
         }
         return examMap;
+    }
+
+
+    //实习生查看以往答卷
+    public Map<String, Object> getDetailById(Integer eu_id){
+        ExamUser examUser = examUserMapper.selectById(eu_id);
+        Map<String, Object> examMap = new HashMap<>();
+        Integer grade = examUser.getGrade();
+        if(grade == null){
+            examMap.put("error_message", "未参加本场考试");
+            return examMap;
+        }
+        else{
+            List<ExamDetailDTO> examDetailDTOList = new ArrayList<>();
+            Exam exam = examMapper.selectById(examUser.getExamId());
+            Paper paper = paperMapper.selectById(exam.getPaperId());
+            QueryWrapper<PaperQuestion> paperQuestionQueryWrapper = new QueryWrapper<>();
+            paperQuestionQueryWrapper.eq("paper_id", paper.getPaperId());
+            List<PaperQuestion> paperQuestionList = paperQuestionMapper.selectList(paperQuestionQueryWrapper);
+            //获取该考试的题目列表
+            String key = "eu_id_" + eu_id;
+            for(PaperQuestion paperQuestion: paperQuestionList){
+                ExamDetailDTO examDetailDTO = new ExamDetailDTO();
+                examDetailDTO.setNum(paperQuestion.getNum());
+                Question question = questionMapper.selectById(paperQuestion.getQid());
+                examDetailDTO.setDescription(question.getDescription());
+                examDetailDTO.setMark(question.getMark());
+                examDetailDTO.setAnswer(question.getAnswer());
+                examDetailDTO.setContentA(question.getContentA());
+                examDetailDTO.setContentB(question.getContentB());
+                examDetailDTO.setContentC(question.getContentC());
+                examDetailDTO.setContentD(question.getContentD());
+                //redis查找option
+                ExamRedisDTO examRedisDTO = (ExamRedisDTO) redisTemplate.opsForValue().get(key);
+                Map<Integer, Integer> answerMap = examRedisDTO.getAnswerMap();
+                examDetailDTO.setOption(answerMap.get(paperQuestion.getNum()));
+                examDetailDTOList.add(examDetailDTO);
+            }
+            examMap.put("error_message", "success");
+            examMap.put("question_answer_list", examDetailDTOList);
+            examMap.put("grade", examUser.getGrade());
+            return examMap;
+        }
     }
 
 }

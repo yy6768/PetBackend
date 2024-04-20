@@ -59,7 +59,7 @@ public class MedicineController {
     public Map<String, Object> getAllMedicine(@RequestParam Map<String, String> map){
         Integer page = Integer.valueOf(map.get("page"));
         Integer pageSize = Integer.valueOf(map.get("pageSize"));
-        String key = map.getOrDefault("key", null);
+        String key = map.getOrDefault("search", null);
         return medicineService.getAllMedicine(page, pageSize, key);
     }
 

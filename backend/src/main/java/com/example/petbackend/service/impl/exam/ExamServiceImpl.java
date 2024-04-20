@@ -37,25 +37,33 @@ public class ExamServiceImpl implements ExamService {
             examUserMapper.insert(examUser);
         }
         Map<String, String> examMap= new HashMap<>();
-        examMap.put("error_msg", "添加成功");
+        examMap.put("error_message", "success");
         examMap.put("exam_id", String.valueOf(exam_id));
         return examMap;
     }
 
     //删除一个考试
     public Map<String, String> deleteExam(Integer exam_id){
-        QueryWrapper<ExamUser> examUserQueryWrapper = new QueryWrapper<>();
-        examUserQueryWrapper.eq("exam_id",exam_id);
-        examUserMapper.delete(examUserQueryWrapper);
-        int res = examMapper.deleteById(exam_id);
         Map<String, String> examMap = new HashMap<>();
-        if(res<1){
-            examMap.put("error_message", "数据库中未找到此考试，删除失败");
+        Exam exam = examMapper.selectById(exam_id);
+        //查找exam的开始时间
+        if(LocalDateTime.now().isAfter(exam.getBeginTime())){
+            examMap.put("error_message", "考试已经开始，无法再进行删除");
+            return examMap;
         }
         else{
-            examMap.put("error_message", "删除成功");
+            QueryWrapper<ExamUser> examUserQueryWrapper = new QueryWrapper<>();
+            examUserQueryWrapper.eq("exam_id",exam_id);
+            examUserMapper.delete(examUserQueryWrapper);
+            int res = examMapper.deleteById(exam_id);
+            if(res<1){
+                examMap.put("error_message", "数据库中未找到此考试，删除失败");
+            }
+            else{
+                examMap.put("error_message", "success");
+            }
+            return examMap;
         }
-        return examMap;
     }
 
     //修改一个考试
@@ -64,7 +72,7 @@ public class ExamServiceImpl implements ExamService {
         Exam exam = examMapper.selectById(exam_id);
         //查找exam的开始时间
         if(LocalDateTime.now().isAfter(exam.getBeginTime())){
-            examMap.put("error_msg", "考试已经开始，无法再进行修改");
+            examMap.put("error_message", "考试已经开始，无法再进行修改");
             return examMap;
         }
         if(exam != null){
@@ -78,9 +86,9 @@ public class ExamServiceImpl implements ExamService {
                 ExamUser examUser = new ExamUser(exam_id, user_list.get(i), null);
                 examUserMapper.insert(examUser);
             }
-            examMap.put("error_msg", "修改成功");
+            examMap.put("error_message", "success");
         }else{
-            examMap.put("error_msg", "数据库中未找到此考试，修改失败");
+            examMap.put("error_message", "数据库中未找到此考试，修改失败");
         }
         return examMap;
     }

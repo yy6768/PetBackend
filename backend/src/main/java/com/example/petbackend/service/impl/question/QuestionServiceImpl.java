@@ -55,7 +55,7 @@ public class QuestionServiceImpl implements QuestionService {
         questionDTO.setContentC(content_c);
         questionDTO.setContentD(content_d);
         Map<String, Object> questionMap = new HashMap<>();
-        questionMap.put("error_message", "添加成功");
+        questionMap.put("error_message", "success");
         questionMap.put("question", questionDTO);
         return questionMap;
     }
@@ -98,7 +98,7 @@ public class QuestionServiceImpl implements QuestionService {
         if(res < 1){
             questionMap.put("error_message", "数据库中未找到对应题目，修改失败");
         } else{
-            questionMap.put("error_message", "修改成功");
+            questionMap.put("error_message", "success");
             questionMap.put("question", questionDTO);
         }
         return questionMap;
@@ -113,7 +113,7 @@ public class QuestionServiceImpl implements QuestionService {
         paperQuestionQueryWrapper.eq("qid", qid);
         PaperQuestion result = paperQuestionMapper.selectOne(paperQuestionQueryWrapper);
         if( result != null){
-            questionMap.put("error_msg", "此题目已被添加到某试卷中，无法删除");
+            questionMap.put("error_message", "此题目已被添加到某试卷中，无法删除");
             return questionMap;
         }
         else{
@@ -121,7 +121,7 @@ public class QuestionServiceImpl implements QuestionService {
             if(res < 1){
                 questionMap.put("error_message", "数据库中未找到对应题目，删除失败");
             } else{
-                questionMap.put("error_message", "删除成功");
+                questionMap.put("error_message", "success");
             }
             return questionMap;
         }

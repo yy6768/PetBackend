@@ -62,7 +62,7 @@ public class GetQuestionsServiceImpl implements GetQuestionsService {
             }
             Map<String, Object> questionMap = new HashMap<>();
             if(questionDTOList != null && !questionDTOList.isEmpty()){ //搜到的题目列表不为空
-                questionMap.put("error_message", "查询成功");
+                questionMap.put("error_message", "success");
                 questionMap.put("question_list", questionDTOList);
                 questionMap.put("total", total);
             } else{
@@ -104,7 +104,7 @@ public class GetQuestionsServiceImpl implements GetQuestionsService {
 
             Map<String, Object> pageMap = new HashMap<>();
             if(pageList != null && !pageList.isEmpty()){ //题目列表不为空
-                pageMap.put("error_message", "查询成功");
+                pageMap.put("error_message", "success");
                 pageMap.put("question_list", pageList);
                 pageMap.put("total", total);
             } else{
@@ -156,7 +156,7 @@ public class GetQuestionsServiceImpl implements GetQuestionsService {
             }
             Map<String, Object> questionMap = new HashMap<>();
             if(questionDTOList != null && !questionDTOList.isEmpty()){ //搜到的题目列表不为空
-                questionMap.put("error_message", "查询成功");
+                questionMap.put("error_message", "success");
                 questionMap.put("question_list", questionDTOList);
                 questionMap.put("total", total);
             } else{
@@ -200,7 +200,7 @@ public class GetQuestionsServiceImpl implements GetQuestionsService {
 
             Map<String, Object> pageMap = new HashMap<>();
             if(pageList != null && !pageList.isEmpty()){ //题目列表不为空
-                pageMap.put("error_message", "查询成功");
+                pageMap.put("error_message", "success");
                 pageMap.put("question_list", pageList);
                 pageMap.put("total", total);
             } else{
@@ -233,7 +233,7 @@ public class GetQuestionsServiceImpl implements GetQuestionsService {
         questionDTO.setContentD(question.getContentD());
         Map<String, Object> questionMap = new HashMap<>();
         if (question != null) {
-            questionMap.put("error_message", "查询成功");
+            questionMap.put("error_message", "success");
             questionMap.put("question", questionDTO);
         } else {
             questionMap.put("error_message", "查看详情失败");

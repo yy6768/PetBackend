@@ -40,7 +40,7 @@ public class GetPaperServiceImpl implements GetPaperService {
         Paper paper = paperMapper.selectById(paper_id);
         Map<String, Object> paperMap = new HashMap<>();
         if(paper != null){
-            paperMap.put("error_msg", "查询成功");
+            paperMap.put("error_message", "success");
             paperMap.put("paperId", paper.getPaperId());
             paperMap.put("paperName", paper.getPaperName());
             paperMap.put("time", paper.getTime());
@@ -75,7 +75,7 @@ public class GetPaperServiceImpl implements GetPaperService {
             }
             paperMap.put("question_list", questionOfPaperDTOList);
         } else{
-            paperMap.put("error_msg", "没找到对应的试卷");
+            paperMap.put("error_message", "没找到对应的试卷");
         }
         return paperMap;
     }
@@ -128,11 +128,11 @@ public class GetPaperServiceImpl implements GetPaperService {
         }
         Map<String, Object> paperMap = new HashMap<>();
         if(paperDTOList != null && !paperDTOList.isEmpty()){
-            paperMap.put("error_msg", "查询成功");
+            paperMap.put("error_message", "success");
             paperMap.put("paper_list", paperDTOList);
             paperMap.put("total", total);
         } else{
-            paperMap.put("error_msg", "未找到对应试卷");
+            paperMap.put("error_message", "未找到对应试卷");
         }
         JSONObject obj = new JSONObject(paperMap);
         return obj;
