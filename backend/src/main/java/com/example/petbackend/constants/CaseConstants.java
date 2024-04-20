@@ -22,6 +22,9 @@ public class CaseConstants {
             "        \"analyzer\": \"ik_max_word\",\n" +
             "        \"copy_to\": \"all\"\n" +
             "      },\n" +
+            "      \"date\":{\n" +
+            "        \"type\":\"text\",\n" +
+            "      },\n" +
             "      \"basicSituation\":{\n" +
             "        \"type\":\"text\",\n" +
             "        \"analyzer\": \"ik_max_word\",\n" +

@@ -62,6 +62,7 @@ public class CaseDocumentTest {
         illcaseDoc.setUsername(userMapper.selectById(illcase.getUid()).getUsername());
         illcaseDoc.setCateName(cateMapper.selectById(illMapper.selectById(illcase.getIllId()).getCateId()).getCateName());
         illcaseDoc.setIllName(illMapper.selectById(illcase.getIllId()).getIllName());
+        illcaseDoc.setDate(illcase.getDate().toString());
         illcaseDoc.setResult(illcase.getResult());
         illcaseDoc.setTherapy(illcase.getTherapy());
         illcaseDoc.setBasicSituation(illcase.getBasicSituation());
@@ -107,6 +108,7 @@ public class CaseDocumentTest {
             illcaseDoc.setUsername(userMapper.selectById(illcase.getUid()).getUsername());
             illcaseDoc.setCateName(cateMapper.selectById(illMapper.selectById(illcase.getIllId()).getCateId()).getCateName());
             illcaseDoc.setIllName(illMapper.selectById(illcase.getIllId()).getIllName());
+            illcaseDoc.setDate(illcase.getDate().toString());
             illcaseDoc.setResult(illcase.getResult());
             illcaseDoc.setTherapy(illcase.getTherapy());
             illcaseDoc.setBasicSituation(illcase.getBasicSituation());
