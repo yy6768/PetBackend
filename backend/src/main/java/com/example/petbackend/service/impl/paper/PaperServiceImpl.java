@@ -42,7 +42,7 @@ public class PaperServiceImpl implements PaperService {
             paperQuestionMapper.insert(paperQuestion);
         }
         Map<String, String> paperMap = new HashMap<>();
-        paperMap.put("error_message", "添加成功");
+        paperMap.put("error_message", "success");
         paperMap.put("paper_id", String.valueOf(paper_id));
         return paperMap;
     }
@@ -56,7 +56,7 @@ public class PaperServiceImpl implements PaperService {
         examQueryWrapper.eq("paper_id", paper_id);
         List<Exam> examList = examMapper.selectList(examQueryWrapper);
         if((examList != null) && !examList.isEmpty()){
-            paperMap.put("error_msg", "此试卷已绑定某考试，无法删除");
+            paperMap.put("error_message", "此试卷已绑定某考试，无法删除");
             return paperMap;
         }
         else{  //可以删除
@@ -68,7 +68,7 @@ public class PaperServiceImpl implements PaperService {
                 paperMap.put("error_message", "数据库中未找到对应试卷，删除失败");
             }
             else{
-                paperMap.put("error_message", "删除成功");
+                paperMap.put("error_message", "success");
             }
             return paperMap;
         }
@@ -85,7 +85,7 @@ public class PaperServiceImpl implements PaperService {
         examQueryWrapper.eq("paper_id", paper_id);
         List<Exam> examList = examMapper.selectList(examQueryWrapper);
         if((examList != null) && !examList.isEmpty()){
-            paperMap.put("error_msg", "此试卷已绑定某考试，无法修改");
+            paperMap.put("error_message", "此试卷已绑定某考试，无法修改");
             return paperMap;
         }
         else{
@@ -106,7 +106,7 @@ public class PaperServiceImpl implements PaperService {
                     PaperQuestion paperQuestion = new PaperQuestion(paper_id, question_list.get(i), i + 1);
                     paperQuestionMapper.insert(paperQuestion);
                 }
-                paperMap.put("error_message", "修改成功");
+                paperMap.put("error_message", "success");
 
             }
             return paperMap;

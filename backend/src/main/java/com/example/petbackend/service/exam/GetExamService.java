@@ -10,4 +10,6 @@ public interface GetExamService {
     Map<String, Object> getExamById(Integer exam_id);
     //实习生根据uid获取其能参加的考试
     Map<String, Object> getExamByUid(Integer uid, Integer page, Integer pageSize);
+    //实习生查看以往答卷
+    Map<String, Object> getDetailById(Integer eu_id);
 }

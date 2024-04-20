@@ -62,7 +62,7 @@ public class SortQuestionServiceImpl implements SortQuestionService {
 
         Map<String, Object> pageMap = new HashMap<>();
         if(pageList != null && !pageList.isEmpty()){ //题目列表不为空
-            pageMap.put("error_message", "排序成功");
+            pageMap.put("error_message", "success");
             pageMap.put("question_list", pageList);
         } else{
             pageMap.put("error_message", "未找到对应题目");

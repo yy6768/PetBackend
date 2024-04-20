@@ -56,6 +56,15 @@ public class GetExamController {
         return getExamService.getExamByUid(uid, page, pageSize);
     }
 
+    /**
+     * 实习生查看某张已经完成的答卷
+     */
+    @GetMapping("/exam/getDetailById")
+    public Map<String, Object> getDetailById(@RequestParam Map<String, String> map){
+        Integer eu_id = Integer.valueOf(map.get("eu_id"));
+        return getExamService.getDetailById(eu_id);
+    }
+
 
 
 }
