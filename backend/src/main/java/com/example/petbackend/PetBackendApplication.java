@@ -15,11 +15,6 @@ public class PetBackendApplication {
         SpringApplication.run(PetBackendApplication.class, args);
     }
 
-    @Bean
-    public RestHighLevelClient client(){
-        return new RestHighLevelClient(RestClient.builder(
-                HttpHost.create("http://localhost:9200")
-        ));
-    }
+
 
 }

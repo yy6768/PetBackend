@@ -2,8 +2,10 @@ package com.example.petbackend.controller.exam;
 
 import com.example.petbackend.service.exam.GetExamService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -26,6 +28,9 @@ public class GetExamController {
         String key = map.containsKey("key") ? map.get("key") : null;
         return getExamService.getAllExamByName(page, pageSize, key);
     }
+
+
+    
 
     /**
      * 管理员根据ID获取考试详情
@@ -50,6 +55,7 @@ public class GetExamController {
         Integer uid = Integer.valueOf(map.get("uid"));
         return getExamService.getExamByUid(uid, page, pageSize);
     }
+
 
 
 }

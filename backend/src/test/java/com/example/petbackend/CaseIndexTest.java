@@ -47,7 +47,7 @@ public class CaseIndexTest {
     @BeforeEach
     void setUp(){
         this.client=new RestHighLevelClient(RestClient.builder(
-                HttpHost.create("http://localhost:9200")
+                HttpHost.create("http://124.223.161.233:9200")
         ));
     }
 
