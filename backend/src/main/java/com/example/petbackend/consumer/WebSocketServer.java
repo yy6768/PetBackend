@@ -293,6 +293,12 @@ public class WebSocketServer {
             startExam();
         } else if ("endExam".equalsIgnoreCase(message)) {
             endExam();
+            // 关闭会话
+            try {
+                session.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else if(message.toLowerCase().startsWith("answer")) {  //处理答案选项
             //解析消息内容
             String[] parts = message.split("\\s+");
