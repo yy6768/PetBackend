@@ -26,9 +26,10 @@ public class LabController {
     public Map<String,String> updateLab(@RequestParam Map<String,String> map){
         Integer lab_id= Integer.valueOf(map.get("lab_id"));
         Double lab_cost= Double.valueOf(map.get("lab_cost"));
+        String lab_name=map.get("lab_name");
         String description = map.get("description");
 
-        return labService.updateLab(lab_id,lab_cost,description);
+        return labService.updateLab(lab_id,lab_name,lab_cost,description);
     }
 
     @DeleteMapping("/lab/delete")
