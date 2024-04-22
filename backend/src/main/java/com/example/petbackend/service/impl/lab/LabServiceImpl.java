@@ -34,10 +34,11 @@ public class LabServiceImpl implements LabService {
     }
 
     @Override
-    public Map<String, String> updateLab(Integer lab_id, Double lab_cost, String description) {
+    public Map<String, String> updateLab(Integer lab_id,String lab_name, Double lab_cost, String description) {
         Lab lab = labMapper.selectById(lab_id);
         int res = 0;
         if(lab != null){
+            lab.setLabName(lab_name);
             lab.setLabCost(lab_cost);
             lab.setDescription(description);
             res=labMapper.updateById(lab);
