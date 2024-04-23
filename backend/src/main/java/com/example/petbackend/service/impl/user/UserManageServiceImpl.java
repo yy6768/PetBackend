@@ -77,10 +77,6 @@ public class UserManageServiceImpl implements UserManageService {
             map.put("error_message","用户名不能为空");
             return map;
         }
-        if(password.isEmpty()){
-            map.put("error_message","密码不能为空");
-            return map;
-        }
 
         if(username.length() > 100){
             map.put("error_message","用户名长度不能大于100");
@@ -104,9 +100,11 @@ public class UserManageServiceImpl implements UserManageService {
         }
 
         //特判完毕，开始逻辑处理
-        String encodedPassword = passwordEncoder.encode(password);
+        if(!password.isEmpty()) {
+            String encodedPassword = passwordEncoder.encode(password);
+            user.setPassword(encodedPassword);
+        }
         user.setUsername(username);
-        user.setPassword(encodedPassword);
         user.setAuthority(authority);
         userMapper.updateById(user);
         map.put("error_message","success");

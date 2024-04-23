@@ -25,6 +25,7 @@ public class RoomServiceImpl implements RoomService {
        queryWrapper.eq("room_name", room_name);
        Room room = roomMapper.selectOne(queryWrapper);
        results.put("error_message", "success");
+       results.put("room_id", room.getRoomId().toString());
        results.put("room_num", room.getRoomNum());
        results.put("description", room.getDescription());
        return results;
